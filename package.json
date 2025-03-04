@@ -1,0 +1,52 @@
+{
+  "name": "apiera-js-sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for Apiera API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "npm run clean && npm run build",
+    "example": "ts-node examples/index.ts",
+    "example:basic": "ts-node examples/basic-usage.ts",
+    "mock-server": "node examples/mock-server/setup.js",
+    "mock-example": "ts-node examples/mock-example.ts",
+    "example:query": "ts-node examples/query-params.ts",
+    "example:token": "ts-node examples/token-provider.ts",
+    "test:mock": "ts-node examples/testing/mock-sdk-test.ts"
+  },
+  "keywords": [
+    "apiera",
+    "sdk",
+    "api",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.9",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "chalk": "^4.1.2",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "json-server": "^1.0.0-beta.3",
+    "rimraf": "^5.0.7",
+    "ts-jest": "^29.2.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "axios": "^1.8.1"
+  }
+}

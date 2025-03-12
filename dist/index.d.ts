@@ -1,0 +1,1175 @@
+/**
+ * Interface for custom token providers
+ */
+interface TokenProvider {
+    /**
+     * Get an authentication token
+     */
+    getToken(): Promise<string>;
+}
+/**
+ * Manages authentication tokens for the API client
+ */
+declare class TokenStore {
+    private token;
+    private tokenProvider;
+    /**
+     * Set a token directly
+     */
+    setToken(token: string): void;
+    /**
+     * Get the current token
+     */
+    getCurrentToken(): string | null;
+    /**
+     * Clear the current token
+     */
+    clearToken(): void;
+    /**
+     * Set a token provider for automatic token retrieval
+     */
+    setTokenProvider(provider: TokenProvider): void;
+    /**
+     * Get a token, either from the stored token or from the provider
+     */
+    getToken(): Promise<string | null>;
+}
+
+/**
+ * Configuration options for the API client
+ */
+interface ApiClientConfig {
+    /**
+     * Base URL for the API
+     */
+    baseUrl: string;
+    /**
+     * Initial JWT token (optional)
+     */
+    token?: string;
+    /**
+     * Request timeout in milliseconds
+     */
+    timeout?: number;
+    /**
+     * Additional headers to include with every request
+     */
+    headers?: Record<string, string>;
+}
+/**
+ * API error response
+ */
+declare class ApiError extends Error {
+    readonly status?: number | undefined;
+    readonly data?: any | undefined;
+    constructor(message: string, status?: number | undefined, data?: any | undefined);
+}
+/**
+ * Client for making API requests
+ */
+declare class ApiClient {
+    private client;
+    private config;
+    private tokenStore;
+    /**
+     * Create a new API client
+     */
+    constructor(config: ApiClientConfig, tokenStore: TokenStore);
+    /**
+     * Make a GET request to the API
+     */
+    get<T = any>(path: string, params?: Record<string, any>): Promise<T>;
+    /**
+     * Make a POST request to the API
+     */
+    post<T = any>(path: string, data?: any): Promise<T>;
+    /**
+     * Make a PUT request to the API
+     */
+    put<T = any>(path: string, data?: any): Promise<T>;
+    /**
+     * Make a PATCH request to the API
+     */
+    patch<T = any>(path: string, data?: any): Promise<T>;
+    /**
+     * Make a DELETE request to the API
+     */
+    delete<T = any>(path: string): Promise<T>;
+}
+
+/**
+ * Base class for all API services
+ */
+declare abstract class BaseService {
+    protected readonly apiClient: ApiClient;
+    protected readonly basePath: string;
+    /**
+     * Create a new service
+     *
+     * @param apiClient API client
+     * @param basePath Base path for the service endpoints
+     */
+    constructor(apiClient: ApiClient, basePath: string);
+    /**
+     * Extract the ID from an IRI
+     *
+     * @param iri IRI to extract from (e.g., "https://api.apiera.com/v1/stores/123")
+     * @returns Extracted ID (e.g., "123")
+     */
+    protected extractIdFromIri(iri: string): string;
+}
+
+/**
+ * JSON-LD resource types
+ */
+declare enum LdType {
+    Store = "Store",
+    Product = "Product",
+    AlternateIdentifier = "AlternateIdentifier",
+    Collection = "Collection"
+}
+
+declare enum AlternateIdentifierType {
+    DISTRIBUTOR_SKU = "distributor_sku",
+    EAN = "ean",
+    EAN8 = "ean8",
+    UPC = "upc",
+    UPC_E = "upc_e",
+    ISBN = "isbn",
+    ISBN13 = "isbn13",
+    MPN = "mpn",
+    GTIN = "gtin",
+    ASIN = "asin",
+    LEGACY_CODE = "legacy_code",
+    CUSTOM = "custom"
+}
+
+/**
+ * Base interface for all DTOs
+ */
+interface DTO {
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+}
+/**
+ * Interface for request DTOs
+ */
+interface RequestDTO extends DTO {
+    /**
+     * Convert to a plain object for API requests
+     */
+    toJSON(): Record<string, any>;
+}
+/**
+ * Interface for response DTOs
+ */
+interface ResponseDTO extends DTO {
+    /**
+     * Get the UUID of the resource
+     */
+    getUuid(): string;
+    /**
+     * Get the creation timestamp of the resource
+     */
+    getCreatedAt(): Date;
+    /**
+     * Get the last update timestamp of the resource
+     */
+    getUpdatedAt(): Date;
+}
+/**
+ * Interface for JSON-LD resources
+ */
+interface JsonLDResource {
+    /**
+     * Get the IRI (Internationalized Resource Identifier) of the resource
+     */
+    getLdId(): string;
+    /**
+     * Get the type of the resource
+     */
+    getLdType(): LdType;
+}
+/**
+ * Interface for partial collection views (pagination info)
+ */
+interface PartialCollectionViewData {
+    /**
+     * Get the IRI of the current page
+     */
+    getLdId(): string;
+    /**
+     * Get the IRI of the first page
+     */
+    getLdFirst(): string | null;
+    /**
+     * Get the IRI of the last page
+     */
+    getLdLast(): string | null;
+    /**
+     * Get the IRI of the next page
+     */
+    getLdNext(): string | null;
+    /**
+     * Get the IRI of the previous page
+     */
+    getLdPrevious(): string | null;
+}
+/**
+ * Interface for collection resources
+ */
+interface JsonLDCollectionResource {
+    /**
+     * Get the JSON-LD context of the collection
+     */
+    getLdContext(): string;
+    /**
+     * Get the IRI of the collection
+     */
+    getLdId(): string;
+    /**
+     * Get the type of the collection
+     */
+    getLdType(): LdType;
+    /**
+     * Get the items in the collection
+     */
+    getLdMembers(): ResponseDTO[];
+    /**
+     * Get the total number of items in the collection (across all pages)
+     */
+    getLdTotalItems(): number;
+    /**
+     * Get the pagination information for the collection
+     */
+    getLdView(): PartialCollectionViewData | null;
+}
+
+/**
+ * Abstract base class for all DTOs
+ */
+declare abstract class AbstractDTO implements DTO {
+    /**
+     * Convert the DTO to a plain object
+     */
+    abstract toJSON(): Record<string, any>;
+}
+
+/**
+ * Abstract base class for single resource responses
+ */
+declare abstract class AbstractResponse extends AbstractDTO implements ResponseDTO, JsonLDResource {
+    private readonly ldId;
+    private readonly ldType;
+    private readonly uuid;
+    private readonly createdAt;
+    private readonly updatedAt;
+    /**
+     * Create a new AbstractResponse
+     *
+     * @param ldId IRI of the resource
+     * @param ldType Type of the resource
+     * @param uuid UUID of the resource
+     * @param createdAt Creation timestamp
+     * @param updatedAt Last update timestamp
+     */
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date);
+    /**
+     * Get the IRI of the resource
+     */
+    getLdId(): string;
+    /**
+     * Get the type of the resource
+     */
+    getLdType(): LdType;
+    /**
+     * Get the UUID of the resource
+     */
+    getUuid(): string;
+    /**
+     * Get the creation timestamp of the resource
+     */
+    getCreatedAt(): Date;
+    /**
+     * Get the last update timestamp of the resource
+     */
+    getUpdatedAt(): Date;
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+}
+
+/**
+ * Represents pagination information for a collection
+ */
+declare class PartialCollectionView extends AbstractDTO implements PartialCollectionViewData {
+    private readonly ldId;
+    private readonly ldFirst;
+    private readonly ldLast;
+    private readonly ldNext;
+    private readonly ldPrevious;
+    /**
+     * Create a new PartialCollectionView instance
+     *
+     * @param ldId IRI of the current page
+     * @param ldFirst IRI of the first page
+     * @param ldLast IRI of the last page
+     * @param ldNext IRI of the next page
+     * @param ldPrevious IRI of the previous page
+     */
+    constructor(ldId: string, ldFirst?: string | null, ldLast?: string | null, ldNext?: string | null, ldPrevious?: string | null);
+    /**
+     * Get the IRI of the current page
+     */
+    getLdId(): string;
+    /**
+     * Get the IRI of the first page
+     */
+    getLdFirst(): string | null;
+    /**
+     * Get the IRI of the last page
+     */
+    getLdLast(): string | null;
+    /**
+     * Get the IRI of the next page
+     */
+    getLdNext(): string | null;
+    /**
+     * Get the IRI of the previous page
+     */
+    getLdPrevious(): string | null;
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): PartialCollectionView;
+}
+
+/**
+ * Abstract base class for collection responses
+ */
+declare abstract class AbstractCollectionResponse extends AbstractDTO implements JsonLDCollectionResource {
+    private readonly ldContext;
+    private readonly ldId;
+    private readonly ldType;
+    private readonly ldMembers;
+    private readonly ldTotalItems;
+    private readonly ldView;
+    /**
+     * Create a new AbstractCollectionResponse
+     *
+     * @param ldContext JSON-LD context of the collection
+     * @param ldId IRI of the collection
+     * @param ldType Type of the collection
+     * @param ldMembers Items in the collection
+     * @param ldTotalItems Total number of items across all pages
+     * @param ldView Pagination information
+     */
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: ResponseDTO[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    /**
+     * Get the JSON-LD context of the collection
+     */
+    getLdContext(): string;
+    /**
+     * Get the IRI of the collection
+     */
+    getLdId(): string;
+    /**
+     * Get the type of the collection
+     */
+    getLdType(): LdType;
+    /**
+     * Get the items in the collection
+     */
+    getLdMembers(): ResponseDTO[];
+    /**
+     * Get the total number of items across all pages
+     */
+    getLdTotalItems(): number;
+    /**
+     * Get the pagination information
+     */
+    getLdView(): PartialCollectionView | null;
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+}
+
+/**
+ * Query parameters for API requests
+ */
+declare class QueryParameters extends AbstractDTO {
+    private readonly params;
+    private readonly filters;
+    private readonly page;
+    /**
+     * Create a new QueryParameters instance
+     *
+     * @param params General parameters (sorting, ordering, etc.)
+     * @param filters Filter parameters
+     * @param page Page number
+     */
+    constructor(params?: Record<string, any>, filters?: Record<string, string>, page?: number | null);
+    /**
+     * Get the general parameters
+     */
+    getParams(): Record<string, any>;
+    /**
+     * Get the filter parameters
+     */
+    getFilters(): Record<string, string>;
+    /**
+     * Get the page number
+     */
+    getPage(): number | null;
+    /**
+     * Convert to a plain object for API requests
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create a builder for QueryParameters
+     */
+    static builder(): QueryParametersBuilder;
+}
+/**
+ * Builder for QueryParameters
+ */
+declare class QueryParametersBuilder {
+    private _params;
+    private _filters;
+    private _page;
+    /**
+     * Add a general parameter
+     */
+    param(key: string, value: any): QueryParametersBuilder;
+    /**
+     * Add multiple general parameters
+     */
+    params(params: Record<string, any>): QueryParametersBuilder;
+    /**
+     * Add a filter parameter
+     */
+    filter(key: string, value: string): QueryParametersBuilder;
+    /**
+     * Add multiple filter parameters
+     */
+    filters(filters: Record<string, string>): QueryParametersBuilder;
+    /**
+     * Set the page number
+     */
+    page(page: number): QueryParametersBuilder;
+    /**
+     * Build the QueryParameters instance
+     */
+    build(): QueryParameters;
+}
+
+/**
+ * DTO for store creation and update requests
+ */
+declare class StoreRequest extends AbstractDTO implements RequestDTO {
+    private readonly name;
+    private readonly description;
+    private readonly image;
+    private readonly iri;
+    /**
+     * Create a new StoreRequest
+     *
+     * @param name Store name
+     * @param description Store description
+     * @param image Store image URL
+     * @param iri Store IRI (used for updates, not sent in requests)
+     */
+    constructor(name?: string | null, description?: string | null, image?: string | null, iri?: string | null);
+    /**
+     * Get the store name
+     */
+    getName(): string | null;
+    /**
+     * Get the store description
+     */
+    getDescription(): string | null;
+    /**
+     * Get the store image URL
+     */
+    getImage(): string | null;
+    /**
+     * Get the store IRI
+     */
+    getIri(): string | null;
+    /**
+     * Convert to a plain object for API requests
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create a builder for StoreRequest
+     */
+    static builder(): StoreRequestBuilder;
+}
+/**
+ * Builder for StoreRequest
+ */
+declare class StoreRequestBuilder {
+    private _name;
+    private _description;
+    private _image;
+    private _iri;
+    /**
+     * Set the store name
+     */
+    name(name: string): StoreRequestBuilder;
+    /**
+     * Set the store description
+     */
+    description(description: string): StoreRequestBuilder;
+    /**
+     * Set the store image URL
+     */
+    image(image: string): StoreRequestBuilder;
+    /**
+     * Set the store IRI
+     */
+    iri(iri: string): StoreRequestBuilder;
+    /**
+     * Build the StoreRequest
+     */
+    build(): StoreRequest;
+}
+
+/**
+ * DTO for product creation and update requests
+ */
+declare class ProductRequest extends AbstractDTO implements RequestDTO {
+    private readonly name;
+    private readonly type;
+    private readonly price;
+    private readonly salePrice;
+    private readonly description;
+    private readonly shortDescription;
+    private readonly weight;
+    private readonly length;
+    private readonly width;
+    private readonly height;
+    private readonly status;
+    private readonly distributor;
+    private readonly brand;
+    private readonly sku;
+    private readonly image;
+    private readonly categories;
+    private readonly tags;
+    private readonly attributes;
+    private readonly images;
+    private readonly alternateIdentifiers;
+    private readonly propertyTerms;
+    private readonly iri;
+    /**
+     * Create a new ProductRequest
+     */
+    constructor(name?: string | null, type?: 'simple' | string | null, price?: string | null, salePrice?: string | null, description?: string | null, shortDescription?: string | null, weight?: string | null, length?: string | null, width?: string | null, height?: string | null, status?: 'active' | string | null, distributor?: string | null, brand?: string | null, sku?: string | null, image?: string | null, categories?: string[] | null, tags?: string[] | null, attributes?: string[] | null, images?: string[] | null, alternateIdentifiers?: string[] | null, propertyTerms?: string[] | null, iri?: string | null);
+    getName(): string | null;
+    getType(): string | null;
+    getPrice(): string | null;
+    getSalePrice(): string | null;
+    getDescription(): string | null;
+    getShortDescription(): string | null;
+    getWeight(): string | null;
+    getLength(): string | null;
+    getWidth(): string | null;
+    getHeight(): string | null;
+    getStatus(): string | null;
+    getDistributor(): string | null;
+    getBrand(): string | null;
+    getSku(): string | null;
+    getImage(): string | null;
+    getCategories(): string[] | null;
+    getTags(): string[] | null;
+    getAttributes(): string[] | null;
+    getImages(): string[] | null;
+    getAlternateIdentifiers(): string[] | null;
+    getPropertyTerms(): string[] | null;
+    getIri(): string | null;
+    /**
+     * Convert to a plain object for API requests
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create a builder for ProductRequest
+     */
+    static builder(): ProductRequestBuilder;
+}
+/**
+ * Builder for ProductRequest
+ */
+declare class ProductRequestBuilder {
+    private _name;
+    private _type;
+    private _price;
+    private _salePrice;
+    private _description;
+    private _shortDescription;
+    private _weight;
+    private _length;
+    private _width;
+    private _height;
+    private _status;
+    private _distributor;
+    private _brand;
+    private _sku;
+    private _image;
+    private _categories;
+    private _tags;
+    private _attributes;
+    private _images;
+    private _alternateIdentifiers;
+    private _propertyTerms;
+    private _iri;
+    name(name: string): ProductRequestBuilder;
+    type(type: string): ProductRequestBuilder;
+    price(price: string): ProductRequestBuilder;
+    salePrice(salePrice: string): ProductRequestBuilder;
+    description(description: string): ProductRequestBuilder;
+    shortDescription(shortDescription: string): ProductRequestBuilder;
+    weight(weight: string): ProductRequestBuilder;
+    length(length: string): ProductRequestBuilder;
+    width(width: string): ProductRequestBuilder;
+    height(height: string): ProductRequestBuilder;
+    status(status: string): ProductRequestBuilder;
+    distributor(distributor: string): ProductRequestBuilder;
+    brand(brand: string): ProductRequestBuilder;
+    sku(sku: string): ProductRequestBuilder;
+    image(image: string): ProductRequestBuilder;
+    categories(categories: string[]): ProductRequestBuilder;
+    tags(tags: string[]): ProductRequestBuilder;
+    attributes(attributes: string[]): ProductRequestBuilder;
+    images(images: string[]): ProductRequestBuilder;
+    alternateIdentifiers(alternateIdentifiers: string[]): ProductRequestBuilder;
+    propertyTerms(propertyTerms: string[]): ProductRequestBuilder;
+    iri(iri: string): ProductRequestBuilder;
+    /**
+     * Build the ProductRequest
+     */
+    build(): ProductRequest;
+}
+
+/**
+ * DTO for alternate identifier creation and update requests
+ */
+declare class AlternateIdentifierRequest extends AbstractDTO implements RequestDTO {
+    private readonly code;
+    private readonly type;
+    constructor(code?: string | null, type?: AlternateIdentifierType | null);
+    getCode(): string | null;
+    getType(): AlternateIdentifierType | null;
+    toJSON(): Record<string, any>;
+    static builder(): AlternateIdentifierRequestBuilder;
+}
+declare class AlternateIdentifierRequestBuilder {
+    private _code;
+    private _type;
+    code(code: string): AlternateIdentifierRequestBuilder;
+    type(type: AlternateIdentifierType): AlternateIdentifierRequestBuilder;
+    build(): AlternateIdentifierRequest;
+}
+
+/**
+ * DTO for store responses
+ */
+declare class StoreResponse extends AbstractResponse {
+    private readonly name;
+    private readonly description;
+    private readonly image;
+    /**
+     * Create a new StoreResponse
+     *
+     * @param ldId Store IRI
+     * @param ldType Store type
+     * @param uuid Store UUID
+     * @param createdAt Creation timestamp
+     * @param updatedAt Last update timestamp
+     * @param name Store name
+     * @param description Store description
+     * @param image Store image URL
+     */
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, name: string, description?: string | null, image?: string | null);
+    /**
+     * Get the store name
+     */
+    getName(): string;
+    /**
+     * Get the store description
+     */
+    getDescription(): string | null;
+    /**
+     * Get the store image URL
+     */
+    getImage(): string | null;
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): StoreResponse;
+}
+
+/**
+ * DTO for store collection responses
+ */
+declare class StoreCollectionResponse extends AbstractCollectionResponse {
+    /**
+     * Create a new StoreCollectionResponse
+     *
+     * @param ldContext JSON-LD context
+     * @param ldId Collection IRI
+     * @param ldType Collection type
+     * @param ldMembers Stores in the collection
+     * @param ldTotalItems Total number of stores
+     * @param ldView Pagination information
+     */
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: StoreResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    /**
+     * Get the stores in the collection
+     */
+    getLdMembers(): StoreResponse[];
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): StoreCollectionResponse;
+}
+
+/**
+ * DTO for product responses
+ */
+declare class ProductResponse extends AbstractResponse {
+    private readonly name;
+    private readonly type;
+    private readonly price;
+    private readonly salePrice;
+    private readonly description;
+    private readonly shortDescription;
+    private readonly weight;
+    private readonly length;
+    private readonly width;
+    private readonly height;
+    private readonly status;
+    private readonly store;
+    private readonly distributor;
+    private readonly brand;
+    private readonly sku;
+    private readonly image;
+    private readonly categories;
+    private readonly tags;
+    private readonly attributes;
+    private readonly images;
+    private readonly alternateIdentifiers;
+    private readonly propertyTerms;
+    /**
+     * Create a new ProductResponse
+     */
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, name: string, type: string, price?: string | null, salePrice?: string | null, description?: string | null, shortDescription?: string | null, weight?: string | null, length?: string | null, width?: string | null, height?: string | null, status?: string | null, store?: string | null, distributor?: string | null, brand?: string | null, sku?: string | null, image?: string | null, categories?: string[], tags?: string[], attributes?: string[], images?: string[], alternateIdentifiers?: string[], propertyTerms?: string[]);
+    getName(): string;
+    getType(): string;
+    getPrice(): string | null;
+    getSalePrice(): string | null;
+    getDescription(): string | null;
+    getShortDescription(): string | null;
+    getWeight(): string | null;
+    getLength(): string | null;
+    getWidth(): string | null;
+    getHeight(): string | null;
+    getStatus(): string | null;
+    getStore(): string | null;
+    getDistributor(): string | null;
+    getBrand(): string | null;
+    getSku(): string | null;
+    getImage(): string | null;
+    getCategories(): string[];
+    getTags(): string[];
+    getAttributes(): string[];
+    getImages(): string[];
+    getAlternateIdentifiers(): string[];
+    getPropertyTerms(): string[];
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): ProductResponse;
+}
+
+/**
+ * DTO for product collection responses
+ */
+declare class ProductCollectionResponse extends AbstractCollectionResponse {
+    /**
+     * Create a new ProductCollectionResponse
+     */
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: ProductResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    /**
+     * Get the products in the collection
+     */
+    getLdMembers(): ProductResponse[];
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): ProductCollectionResponse;
+}
+
+/**
+ * DTO for alternate identifier responses
+ */
+declare class AlternateIdentifierResponse extends AbstractResponse {
+    private readonly code;
+    private readonly type;
+    /**
+     * Create a new AlternateIdentifierResponse
+     *
+     * @param ldId Alternate identifier IRI
+     * @param ldType Alternate identifier type
+     * @param uuid Alternate identifier UUID
+     * @param createdAt Creation timestamp
+     * @param updatedAt Last update timestamp
+     * @param code Alternate identifier code
+     * @param type Alternate identifier type (e.g., EAN, UPC)
+     */
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, code: string, type: AlternateIdentifierType);
+    /**
+     * Get the alternate identifier code
+     */
+    getCode(): string;
+    /**
+     * Get the alternate identifier type
+     */
+    getType(): AlternateIdentifierType;
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): AlternateIdentifierResponse;
+}
+
+/**
+ * DTO for alternate identifier collection responses
+ */
+declare class AlternateIdentifierCollectionResponse extends AbstractCollectionResponse {
+    /**
+     * Create a new AlternateIdentifierCollectionResponse
+     *
+     * @param ldContext JSON-LD context
+     * @param ldId Collection IRI
+     * @param ldType Collection type
+     * @param ldMembers Alternate identifiers in the collection
+     * @param ldTotalItems Total number of alternate identifiers
+     * @param ldView Pagination information
+     */
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: AlternateIdentifierResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    /**
+     * Get the alternate identifiers in the collection
+     */
+    getLdMembers(): AlternateIdentifierResponse[];
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): AlternateIdentifierCollectionResponse;
+}
+
+/**
+ * Service for interacting with store endpoints
+ */
+declare class StoreService extends BaseService {
+    /**
+     * Create a new store service
+     *
+     * @param apiClient API client
+     */
+    constructor(apiClient: ApiClient);
+    /**
+     * Get all stores
+     *
+     * @param queryParams Optional query parameters for filtering, pagination, etc.
+     * @returns Collection of stores
+     */
+    getAll(queryParams?: QueryParameters): Promise<StoreCollectionResponse>;
+    /**
+     * Get a store by ID
+     *
+     * @param id Store ID
+     * @returns Store data
+     */
+    getById(id: string): Promise<StoreResponse>;
+    /**
+     * Get a store by IRI
+     *
+     * @param iri Store IRI
+     * @returns Store data
+     */
+    getByIri(iri: string): Promise<StoreResponse>;
+    /**
+     * Create a new store
+     *
+     * @param storeRequest Store data
+     * @returns The created store
+     */
+    create(storeRequest: StoreRequest): Promise<StoreResponse>;
+    /**
+     * Update an existing store
+     *
+     * @param id Store ID
+     * @param storeRequest Updated store data
+     * @returns The updated store
+     */
+    update(id: string, storeRequest: StoreRequest): Promise<StoreResponse>;
+    /**
+     * Update a store by IRI
+     *
+     * @param iri Store IRI
+     * @param storeRequest Updated store data
+     * @returns The updated store
+     */
+    updateByIri(iri: string, storeRequest: StoreRequest): Promise<StoreResponse>;
+    /**
+     * Delete a store
+     *
+     * @param id Store ID
+     */
+    delete(id: string): Promise<void>;
+    /**
+     * Delete a store by IRI
+     *
+     * @param iri Store IRI
+     */
+    deleteByIri(iri: string): Promise<void>;
+}
+
+/**
+ * Service for interacting with product endpoints
+ */
+declare class ProductService extends BaseService {
+    private storeIri;
+    private resourcePath;
+    /**
+     * Create a new product service
+     *
+     * @param apiClient API client
+     * @param storeIri Store IRI for product association
+     */
+    constructor(apiClient: ApiClient, storeIri: string);
+    /**
+     * Set the store IRI for product association
+     *
+     * @param storeIri The full IRI of the store
+     */
+    setStoreIri(storeIri: string): void;
+    /**
+     * Get all products for the store
+     *
+     * @param queryParams Optional query parameters for filtering, pagination, etc.
+     * @returns Collection of products
+     */
+    getAll(queryParams?: QueryParameters): Promise<ProductCollectionResponse>;
+    /**
+     * Get a product by ID
+     *
+     * @param id Product ID
+     * @returns Product data
+     */
+    getById(id: string): Promise<ProductResponse>;
+    /**
+     * Get a product by IRI
+     *
+     * @param iri Product IRI
+     * @returns Product data
+     */
+    getByIri(iri: string): Promise<ProductResponse>;
+    /**
+     * Create a new product
+     *
+     * @param productRequest Product data
+     * @returns The created product
+     */
+    create(productRequest: ProductRequest): Promise<ProductResponse>;
+    /**
+     * Update an existing product
+     *
+     * @param id Product ID
+     * @param productRequest Updated product data
+     * @returns The updated product
+     */
+    update(id: string, productRequest: ProductRequest): Promise<ProductResponse>;
+    /**
+     * Update a product by IRI
+     *
+     * @param iri Product IRI
+     * @param productRequest Updated product data
+     * @returns The updated product
+     */
+    updateByIri(iri: string, productRequest: ProductRequest): Promise<ProductResponse>;
+    /**
+     * Delete a product
+     *
+     * @param id Product ID
+     */
+    delete(id: string): Promise<void>;
+    /**
+     * Delete a product by IRI
+     *
+     * @param iri Product IRI
+     */
+    deleteByIri(iri: string): Promise<void>;
+}
+
+/**
+ * Service for interacting with alternate identifier endpoints
+ */
+declare class AlternateIdentifierService extends BaseService {
+    /**
+     * Create a new alternate identifier service
+     *
+     * @param apiClient API client
+     */
+    constructor(apiClient: ApiClient);
+    /**
+     * Get all alternate identifiers
+     *
+     * @param queryParams Optional query parameters for filtering, pagination, etc.
+     * @returns Collection of alternate identifiers
+     */
+    getAll(queryParams?: QueryParameters): Promise<AlternateIdentifierCollectionResponse>;
+    /**
+     * Get an alternate identifier by ID
+     *
+     * @param id Alternate identifier ID
+     * @returns Alternate identifier data
+     */
+    getById(id: string): Promise<AlternateIdentifierResponse>;
+    /**
+     * Get an alternate identifier by IRI
+     *
+     * @param iri Alternate identifier IRI
+     * @returns Alternate identifier data
+     */
+    getByIri(iri: string): Promise<AlternateIdentifierResponse>;
+    /**
+     * Create a new alternate identifier
+     *
+     * @param request Alternate identifier data
+     * @returns The created alternate identifier
+     */
+    create(request: AlternateIdentifierRequest): Promise<AlternateIdentifierResponse>;
+    /**
+     * Update an existing alternate identifier
+     *
+     * @param id Alternate identifier ID
+     * @param request Updated alternate identifier data
+     * @returns The updated alternate identifier
+     */
+    update(id: string, request: AlternateIdentifierRequest): Promise<AlternateIdentifierResponse>;
+    /**
+     * Update an alternate identifier by IRI
+     *
+     * @param iri Alternate identifier IRI
+     * @param request Updated alternate identifier data
+     * @returns The updated alternate identifier
+     */
+    updateByIri(iri: string, request: AlternateIdentifierRequest): Promise<AlternateIdentifierResponse>;
+    /**
+     * Delete an alternate identifier
+     *
+     * @param id Alternate identifier ID
+     */
+    delete(id: string): Promise<void>;
+    /**
+     * Delete an alternate identifier by IRI
+     *
+     * @param iri Alternate identifier IRI
+     */
+    deleteByIri(iri: string): Promise<void>;
+}
+
+/**
+ * Configuration options for the Apiera SDK
+ */
+interface ApieraSdkConfig {
+    /**
+     * Base URL for the API
+     */
+    baseUrl: string;
+    /**
+     * Initial JWT token (optional)
+     */
+    token?: string;
+    /**
+     * Request timeout in milliseconds
+     */
+    timeout?: number;
+    /**
+     * Additional headers to include with every request
+     */
+    headers?: Record<string, string>;
+    /**
+     * Custom token provider (optional)
+     */
+    tokenProvider?: TokenProvider;
+}
+/**
+ * Main SDK class for interacting with the Apiera API
+ */
+declare class ApieraSdk {
+    private apiClient;
+    private tokenStore;
+    /**
+     * Services
+     */
+    readonly store: StoreService;
+    readonly alternateIdentifier: AlternateIdentifierService;
+    /**
+     * Create a new Apiera SDK instance
+     *
+     * @param config SDK configuration
+     */
+    constructor(config: ApieraSdkConfig);
+    /**
+     * Get a product service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Product service for the specified store
+     */
+    getProductService(storeIri: string): ProductService;
+    /**
+     * Set an authentication token
+     *
+     * @param token JWT token
+     */
+    setToken(token: string): void;
+    /**
+     * Clear the authentication token
+     */
+    clearToken(): void;
+    /**
+     * Set a custom token provider
+     *
+     * @param provider Token provider
+     */
+    setTokenProvider(provider: TokenProvider): void;
+    /**
+     * Get the current token, fetching from the provider if necessary
+     *
+     * @returns The current token, or null if no token is available
+     */
+    getToken(): Promise<string | null>;
+}
+
+export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, BaseService, type DTO, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };

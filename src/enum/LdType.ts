@@ -4,6 +4,7 @@
 export enum LdType {
     Store = 'Store',
     Product = 'Product',
+    AlternateIdentifier = 'AlternateIdentifier',
     Collection = 'Collection',
     // Add other types as needed
 }

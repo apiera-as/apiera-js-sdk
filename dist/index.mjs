@@ -980,6 +980,39 @@ var AlternateIdentifierRequestBuilder = class {
   }
 };
 
+// src/dto/request/SkuRequest.ts
+var SkuRequest = class extends AbstractDTO {
+  constructor(code = null) {
+    super();
+    this.code = code;
+  }
+  getCode() {
+    return this.code;
+  }
+  toJSON() {
+    const data = {};
+    if (this.code !== null) data.code = this.code;
+    return data;
+  }
+  static builder() {
+    return new SkuRequestBuilder();
+  }
+};
+var SkuRequestBuilder = class {
+  constructor() {
+    this._code = null;
+  }
+  code(code) {
+    this._code = code;
+    return this;
+  }
+  build() {
+    return new SkuRequest(
+      this._code
+    );
+  }
+};
+
 // src/enum/LdType.ts
 var LdType = /* @__PURE__ */ ((LdType2) => {
   LdType2["Store"] = "Store";
@@ -1395,6 +1428,72 @@ var AlternateIdentifierCollectionResponse = class _AlternateIdentifierCollection
   }
 };
 
+// src/dto/response/SkuResponse.ts
+var SkuResponse = class _SkuResponse extends AbstractResponse {
+  constructor(ldId, ldType, uuid, createdAt, updatedAt, code, products, variants, inventories) {
+    super(ldId, ldType, uuid, createdAt, updatedAt);
+    this.code = code;
+    this.products = products;
+    this.variants = variants;
+    this.inventories = inventories;
+  }
+  getCode() {
+    return this.code;
+  }
+  getProducts() {
+    return this.products;
+  }
+  getVariants() {
+    return this.variants;
+  }
+  getInventories() {
+    return this.inventories;
+  }
+  toJSON() {
+    return __spreadProps(__spreadValues({}, super.toJSON()), {
+      code: this.code,
+      products: this.products,
+      variants: this.variants,
+      inventories: this.inventories
+    });
+  }
+  static fromJSON(data) {
+    return new _SkuResponse(
+      data["@id"] || "",
+      data["@type"] || "AlternateIdentifier" /* AlternateIdentifier */,
+      data.uuid || "",
+      new Date(data.createdAt),
+      new Date(data.updatedAt),
+      data.code || "",
+      data.products || [],
+      data.variants || [],
+      data.inventories || []
+    );
+  }
+};
+
+// src/dto/response/SkuCollectionResponse.ts
+var SkuCollectionResponse = class _SkuCollectionResponse extends AbstractCollectionResponse {
+  constructor(ldContext, ldId, ldType, ldMembers = [], ldTotalItems = 0, ldView = null) {
+    super(ldContext, ldId, ldType, ldMembers, ldTotalItems, ldView);
+  }
+  getLdMembers() {
+    return super.getLdMembers();
+  }
+  static fromJSON(data) {
+    const members = (data.member || []).map((item) => SkuResponse.fromJSON(item));
+    const view = data.view ? PartialCollectionView.fromJSON(data.view) : null;
+    return new _SkuCollectionResponse(
+      data["@context"] || "",
+      data["@id"] || "",
+      data["@type"] || "Collection" /* Collection */,
+      members,
+      data.totalItems || 0,
+      view
+    );
+  }
+};
+
 // src/services/StoreService.ts
 var StoreService = class extends BaseService {
   /**
@@ -1733,6 +1832,114 @@ var AlternateIdentifierService = class extends BaseService {
   }
 };
 
+// src/services/SkuService.ts
+var SkuService = class extends BaseService {
+  /**
+   * Create a new sku service
+   *
+   * @param apiClient API client
+   */
+  constructor(apiClient) {
+    super(apiClient, "/api/v1/skus");
+  }
+  /**
+   * Get all skus
+   *
+   * @param queryParams Optional query parameters for filtering, pagination, etc.
+   * @returns Collection of skus
+   */
+  getAll(queryParams) {
+    return __async(this, null, function* () {
+      const params = (queryParams == null ? void 0 : queryParams.toJSON()) || {};
+      const response = yield this.apiClient.get(this.basePath, params);
+      return SkuCollectionResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Get a sku by ID
+   *
+   * @param id Sku ID
+   * @returns Sku data
+   */
+  getById(id) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(`${this.basePath}/${id}`);
+      return SkuResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Get a sku by IRI
+   *
+   * @param iri Sku IRI
+   * @returns Sku data
+   */
+  getByIri(iri) {
+    return __async(this, null, function* () {
+      const id = this.extractIdFromIri(iri);
+      return this.getById(id);
+    });
+  }
+  /**
+   * Create a new sku
+   *
+   * @param skuRequest Sku data
+   * @returns The created sku
+   */
+  create(skuRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.post(this.basePath, skuRequest.toJSON());
+      return SkuResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Update an existing sku
+   *
+   * @param id Sku ID
+   * @param skuRequest Updated sku data
+   * @returns The updated sku
+   */
+  update(id, skuRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(`${this.basePath}/${id}`, skuRequest.toJSON());
+      return SkuResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Update a sku by IRI
+   *
+   * @param iri Sku IRI
+   * @param skuRequest Updated sku data
+   * @returns The updated sku
+   */
+  updateByIri(iri, skuRequest) {
+    return __async(this, null, function* () {
+      const id = this.extractIdFromIri(iri);
+      return this.update(id, skuRequest);
+    });
+  }
+  /**
+   * Delete a sku
+   *
+   * @param id Sku ID
+   */
+  delete(id) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(`${this.basePath}/${id}`);
+    });
+  }
+  /**
+   * Delete a sku by IRI
+   *
+   * @param iri Sku IRI
+   */
+  deleteByIri(iri) {
+    return __async(this, null, function* () {
+      const id = this.extractIdFromIri(iri);
+      yield this.delete(id);
+    });
+  }
+};
+
 // src/ApieraSdk.ts
 var ApieraSdk = class {
   /**
@@ -1758,6 +1965,7 @@ var ApieraSdk = class {
     );
     this.store = new StoreService(this.apiClient);
     this.alternateIdentifier = new AlternateIdentifierService(this.apiClient);
+    this.sku = new SkuService(this.apiClient);
   }
   /**
    * Get a product service for a specific store
@@ -1824,6 +2032,11 @@ export {
   ProductService,
   QueryParameters,
   QueryParametersBuilder,
+  SkuCollectionResponse,
+  SkuRequest,
+  SkuRequestBuilder,
+  SkuResponse,
+  SkuService,
   StoreCollectionResponse,
   StoreRequest,
   StoreRequestBuilder,

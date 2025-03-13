@@ -1,6 +1,6 @@
 // ApieraSdk.ts
 import { ApiClient, TokenProvider, TokenStore } from './core';
-import { StoreService, ProductService, AlternateIdentifierService } from './services';
+import { StoreService, ProductService, AlternateIdentifierService, SkuService } from './services';
 
 /**
  * Configuration options for the Apiera SDK
@@ -44,6 +44,7 @@ export class ApieraSdk {
      */
     readonly store: StoreService;
     readonly alternateIdentifier: AlternateIdentifierService;
+    readonly sku: SkuService;
 
     /**
      * Create a new Apiera SDK instance
@@ -76,6 +77,7 @@ export class ApieraSdk {
         // Initialize services
         this.store = new StoreService(this.apiClient);
         this.alternateIdentifier = new AlternateIdentifierService(this.apiClient);
+        this.sku = new SkuService(this.apiClient);
     }
 
     /**

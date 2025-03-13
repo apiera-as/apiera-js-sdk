@@ -678,6 +678,19 @@ declare class AlternateIdentifierRequestBuilder {
     build(): AlternateIdentifierRequest;
 }
 
+declare class SkuRequest extends AbstractDTO implements RequestDTO {
+    private readonly code;
+    constructor(code?: string | null);
+    getCode(): string | null;
+    toJSON(): Record<string, any>;
+    static builder(): SkuRequestBuilder;
+}
+declare class SkuRequestBuilder {
+    private _code;
+    code(code: string): SkuRequestBuilder;
+    build(): SkuRequest;
+}
+
 /**
  * DTO for store responses
  */
@@ -884,6 +897,26 @@ declare class AlternateIdentifierCollectionResponse extends AbstractCollectionRe
      * Create from API JSON data
      */
     static fromJSON(data: any): AlternateIdentifierCollectionResponse;
+}
+
+declare class SkuResponse extends AbstractResponse {
+    private readonly code;
+    private readonly products;
+    private readonly variants;
+    private readonly inventories;
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, code: string, products: string[], variants: string[], inventories: string[]);
+    getCode(): string;
+    getProducts(): string[];
+    getVariants(): string[];
+    getInventories(): string[];
+    toJSON(): Record<string, any>;
+    static fromJSON(data: any): SkuResponse;
+}
+
+declare class SkuCollectionResponse extends AbstractCollectionResponse {
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: SkuResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    getLdMembers(): SkuResponse[];
+    static fromJSON(data: any): SkuCollectionResponse;
 }
 
 /**
@@ -1100,6 +1133,74 @@ declare class AlternateIdentifierService extends BaseService {
 }
 
 /**
+ * Service for interacting with sku endpoints
+ */
+declare class SkuService extends BaseService {
+    /**
+     * Create a new sku service
+     *
+     * @param apiClient API client
+     */
+    constructor(apiClient: ApiClient);
+    /**
+     * Get all skus
+     *
+     * @param queryParams Optional query parameters for filtering, pagination, etc.
+     * @returns Collection of skus
+     */
+    getAll(queryParams?: QueryParameters): Promise<SkuCollectionResponse>;
+    /**
+     * Get a sku by ID
+     *
+     * @param id Sku ID
+     * @returns Sku data
+     */
+    getById(id: string): Promise<SkuResponse>;
+    /**
+     * Get a sku by IRI
+     *
+     * @param iri Sku IRI
+     * @returns Sku data
+     */
+    getByIri(iri: string): Promise<SkuResponse>;
+    /**
+     * Create a new sku
+     *
+     * @param skuRequest Sku data
+     * @returns The created sku
+     */
+    create(skuRequest: SkuRequest): Promise<SkuResponse>;
+    /**
+     * Update an existing sku
+     *
+     * @param id Sku ID
+     * @param skuRequest Updated sku data
+     * @returns The updated sku
+     */
+    update(id: string, skuRequest: SkuRequest): Promise<SkuResponse>;
+    /**
+     * Update a sku by IRI
+     *
+     * @param iri Sku IRI
+     * @param skuRequest Updated sku data
+     * @returns The updated sku
+     */
+    updateByIri(iri: string, skuRequest: SkuRequest): Promise<SkuResponse>;
+    /**
+     * Delete a sku
+     *
+     * @param id Sku ID
+     */
+    delete(id: string): Promise<void>;
+    /**
+     * Delete a sku by IRI
+     *
+     * @param iri Sku IRI
+     */
+    deleteByIri(iri: string): Promise<void>;
+}
+
+/**
  * Configuration options for the Apiera SDK
  */
 interface ApieraSdkConfig {
@@ -1135,6 +1236,7 @@ declare class ApieraSdk {
      */
     readonly store: StoreService;
     readonly alternateIdentifier: AlternateIdentifierService;
+    readonly sku: SkuService;
     /**
      * Create a new Apiera SDK instance
      *
@@ -1172,4 +1274,4 @@ declare class ApieraSdk {
     getToken(): Promise<string | null>;
 }
 
-export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, BaseService, type DTO, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };
+export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, BaseService, type DTO, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, SkuCollectionResponse, SkuRequest, SkuRequestBuilder, SkuResponse, SkuService, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };

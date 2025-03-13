@@ -8,6 +8,7 @@ var LdType;
 (function (LdType) {
     LdType["Store"] = "Store";
     LdType["Product"] = "Product";
+    LdType["AlternateIdentifier"] = "AlternateIdentifier";
     LdType["Collection"] = "Collection";
     // Add other types as needed
 })(LdType || (exports.LdType = LdType = {}));

@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApieraSdk = void 0;
+// ApieraSdk.ts
 const core_1 = require("./core");
 const services_1 = require("./services");
 /**
@@ -39,6 +40,17 @@ class ApieraSdk {
         }, this.tokenStore);
         // Initialize services
         this.store = new services_1.StoreService(this.apiClient);
+        this.alternateIdentifier = new services_1.AlternateIdentifierService(this.apiClient);
+        this.sku = new services_1.SkuService(this.apiClient);
+    }
+    /**
+     * Get a product service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Product service for the specified store
+     */
+    getProductService(storeIri) {
+        return new services_1.ProductService(this.apiClient, storeIri);
     }
     /**
      * Set an authentication token

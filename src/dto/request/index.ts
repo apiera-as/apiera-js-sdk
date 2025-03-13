@@ -2,3 +2,4 @@
 export * from './StoreRequest';
 export * from './ProductRequest';
 export * from './AlternateIdentifierRequest';
+export * from './SkuRequest'

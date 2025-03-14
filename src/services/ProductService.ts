@@ -66,8 +66,8 @@ export class ProductService extends BaseService {
      * @returns Product data
      */
     async getByIri(iri: string): Promise<ProductResponse> {
-        const id = this.extractIdFromIri(iri);
-        return this.getById(id);
+        const response = await this.apiClient.get<any>(iri);
+        return ProductResponse.fromJSON(response);
     }
 
     /**
@@ -101,8 +101,8 @@ export class ProductService extends BaseService {
      * @returns The updated product
      */
     async updateByIri(iri: string, productRequest: ProductRequest): Promise<ProductResponse> {
-        const id = this.extractIdFromIri(iri);
-        return this.update(id, productRequest);
+        const response = await this.apiClient.put<any>(iri, productRequest.toJSON());
+        return ProductResponse.fromJSON(response);
     }
 
     /**
@@ -120,7 +120,6 @@ export class ProductService extends BaseService {
      * @param iri Product IRI
      */
     async deleteByIri(iri: string): Promise<void> {
-        const id = this.extractIdFromIri(iri);
-        await this.delete(id);
+        await this.apiClient.delete(iri);
     }
 }

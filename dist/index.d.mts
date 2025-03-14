@@ -126,6 +126,8 @@ declare enum LdType {
     Store = "Store",
     Product = "Product",
     AlternateIdentifier = "AlternateIdentifier",
+    Sku = "Sku",
+    File = "File",
     Collection = "Collection"
 }
 
@@ -692,6 +694,67 @@ declare class SkuRequestBuilder {
 }
 
 /**
+ * DTO for file creation and update requests
+ */
+declare class FileRequest extends AbstractDTO implements RequestDTO {
+    private readonly name;
+    private readonly url;
+    private readonly iri;
+    /**
+     * Create a new FileRequest
+     *
+     * @param name File name
+     * @param url File URL
+     * @param iri File IRI (used for updates, not sent in requests)
+     */
+    constructor(name?: string | null, url?: string | null, iri?: string | null);
+    /**
+     * Get the file name
+     */
+    getName(): string | null;
+    /**
+     * Get the file URL
+     */
+    getUrl(): string | null;
+    /**
+     * Get the file IRI
+     */
+    getIri(): string | null;
+    /**
+     * Convert to a plain object for API requests
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create a builder for FileRequest
+     */
+    static builder(): FileRequestBuilder;
+}
+/**
+ * Builder for FileRequest
+ */
+declare class FileRequestBuilder {
+    private _name;
+    private _url;
+    private _iri;
+    /**
+     * Set the file name
+     */
+    name(name: string): FileRequestBuilder;
+    /**
+     * Set the file URL
+     */
+    url(url: string): FileRequestBuilder;
+    /**
+     * Set the file IRI
+     */
+    iri(iri: string): FileRequestBuilder;
+    /**
+     * Build the FileRequest
+     */
+    build(): FileRequest;
+}
+
+/**
  * DTO for store responses
  */
 declare class StoreResponse extends AbstractResponse {
@@ -917,6 +980,79 @@ declare class SkuCollectionResponse extends AbstractCollectionResponse {
     constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: SkuResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
     getLdMembers(): SkuResponse[];
     static fromJSON(data: any): SkuCollectionResponse;
+}
+
+/**
+ * DTO for file responses
+ */
+declare class FileResponse extends AbstractResponse {
+    private readonly name;
+    private readonly extension;
+    private readonly mimeType;
+    private readonly url;
+    /**
+     * Create a new FileResponse
+     *
+     * @param ldId File IRI
+     * @param ldType File type
+     * @param uuid File UUID
+     * @param createdAt Creation timestamp
+     * @param updatedAt Last update timestamp
+     * @param name File name
+     * @param extension File extension
+     * @param mimeType File MIME type
+     * @param url File URL
+     */
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, name: string, extension?: string | null, mimeType?: string | null, url?: string | null);
+    /**
+     * Get the file name
+     */
+    getName(): string;
+    /**
+     * Get the file extension
+     */
+    getExtension(): string | null;
+    /**
+     * Get the file MIME type
+     */
+    getMimeType(): string | null;
+    /**
+     * Get the file URL
+     */
+    getUrl(): string | null;
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): FileResponse;
+}
+
+/**
+ * DTO for file collection responses
+ */
+declare class FileCollectionResponse extends AbstractCollectionResponse {
+    /**
+     * Create a new FileCollectionResponse
+     *
+     * @param ldContext JSON-LD context
+     * @param ldId Collection IRI
+     * @param ldType Collection type
+     * @param ldMembers Files in the collection
+     * @param ldTotalItems Total number of files
+     * @param ldView Pagination information
+     */
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: FileResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    /**
+     * Get the files in the collection
+     */
+    getLdMembers(): FileResponse[];
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): FileCollectionResponse;
 }
 
 /**
@@ -1201,6 +1337,58 @@ declare class SkuService extends BaseService {
 }
 
 /**
+ * Service for interacting with file endpoints
+ */
+declare class FileService extends BaseService {
+    /**
+     * Create a new file service
+     *
+     * @param apiClient API client
+     */
+    constructor(apiClient: ApiClient);
+    /**
+     * Get all files
+     *
+     * @param queryParams Optional query parameters for filtering, pagination, etc.
+     * @returns Collection of files
+     */
+    getAll(queryParams?: QueryParameters): Promise<FileCollectionResponse>;
+    /**
+     * Get a file by ID
+     *
+     * @param id File ID
+     * @returns File data
+     */
+    getById(id: string): Promise<FileResponse>;
+    /**
+     * Get a file by IRI
+     *
+     * @param iri File IRI
+     * @returns File data
+     */
+    getByIri(iri: string): Promise<FileResponse>;
+    /**
+     * Create a new file
+     *
+     * @param fileRequest File data
+     * @returns The created file
+     */
+    create(fileRequest: FileRequest): Promise<FileResponse>;
+    /**
+     * Delete a file
+     *
+     * @param id File ID
+     */
+    delete(id: string): Promise<void>;
+    /**
+     * Delete a file by IRI
+     *
+     * @param iri File IRI
+     */
+    deleteByIri(iri: string): Promise<void>;
+}
+
+/**
  * Configuration options for the Apiera SDK
  */
 interface ApieraSdkConfig {
@@ -1237,6 +1425,7 @@ declare class ApieraSdk {
     readonly store: StoreService;
     readonly alternateIdentifier: AlternateIdentifierService;
     readonly sku: SkuService;
+    readonly file: FileService;
     /**
      * Create a new Apiera SDK instance
      *
@@ -1274,4 +1463,4 @@ declare class ApieraSdk {
     getToken(): Promise<string | null>;
 }
 
-export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, BaseService, type DTO, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, SkuCollectionResponse, SkuRequest, SkuRequestBuilder, SkuResponse, SkuService, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };
+export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, BaseService, type DTO, FileCollectionResponse, FileRequest, FileRequestBuilder, FileResponse, FileService, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, SkuCollectionResponse, SkuRequest, SkuRequestBuilder, SkuResponse, SkuService, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };

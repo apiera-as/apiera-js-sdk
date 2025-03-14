@@ -48,8 +48,8 @@ export class AlternateIdentifierService extends BaseService {
      * @returns Alternate identifier data
      */
     async getByIri(iri: string): Promise<AlternateIdentifierResponse> {
-        const id = this.extractIdFromIri(iri);
-        return this.getById(id);
+        const response = await this.apiClient.get<any>(iri);
+        return AlternateIdentifierResponse.fromJSON(response);
     }
 
     /**
@@ -83,8 +83,8 @@ export class AlternateIdentifierService extends BaseService {
      * @returns The updated alternate identifier
      */
     async updateByIri(iri: string, request: AlternateIdentifierRequest): Promise<AlternateIdentifierResponse> {
-        const id = this.extractIdFromIri(iri);
-        return this.update(id, request);
+        const response = await this.apiClient.put<any>(iri, request.toJSON());
+        return AlternateIdentifierResponse.fromJSON(response);
     }
 
     /**
@@ -102,7 +102,6 @@ export class AlternateIdentifierService extends BaseService {
      * @param iri Alternate identifier IRI
      */
     async deleteByIri(iri: string): Promise<void> {
-        const id = this.extractIdFromIri(iri);
-        await this.delete(id);
+        await this.apiClient.delete(iri);
     }
 }

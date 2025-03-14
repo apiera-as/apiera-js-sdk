@@ -45,7 +45,7 @@ export class SkuResponse extends AbstractResponse {
     static fromJSON(data: any): SkuResponse {
         return new SkuResponse(
             data['@id'] || '',
-            data['@type'] as LdType || LdType.AlternateIdentifier,
+            data['@type'] as LdType || LdType.Sku,
             data.uuid || '',
             new Date(data.createdAt),
             new Date(data.updatedAt),

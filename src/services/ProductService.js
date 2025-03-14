@@ -72,8 +72,8 @@ class ProductService extends BaseService_1.BaseService {
      */
     getByIri(iri) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = this.extractIdFromIri(iri);
-            return this.getById(id);
+            const response = yield this.apiClient.get(iri);
+            return dto_1.ProductResponse.fromJSON(response);
         });
     }
     /**
@@ -110,8 +110,8 @@ class ProductService extends BaseService_1.BaseService {
      */
     updateByIri(iri, productRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = this.extractIdFromIri(iri);
-            return this.update(id, productRequest);
+            const response = yield this.apiClient.put(iri, productRequest.toJSON());
+            return dto_1.ProductResponse.fromJSON(response);
         });
     }
     /**
@@ -131,8 +131,7 @@ class ProductService extends BaseService_1.BaseService {
      */
     deleteByIri(iri) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = this.extractIdFromIri(iri);
-            yield this.delete(id);
+            yield this.apiClient.delete(iri);
         });
     }
 }

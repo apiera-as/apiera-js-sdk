@@ -7,3 +7,5 @@ export * from './AlternateIdentifierResponse';
 export * from './AlternateIdentifierCollectionResponse';
 export * from './SkuResponse';
 export * from './SkuCollectionResponse';
+export * from './FileResponse';
+export * from './FileCollectionResponse';

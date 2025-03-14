@@ -45,8 +45,8 @@ export class SkuService extends BaseService {
      * @returns Sku data
      */
     async getByIri(iri: string): Promise<SkuResponse> {
-        const id = this.extractIdFromIri(iri);
-        return this.getById(id);
+        const response = await this.apiClient.get<any>(iri);
+        return SkuResponse.fromJSON(response);
     }
 
     /**
@@ -80,8 +80,8 @@ export class SkuService extends BaseService {
      * @returns The updated sku
      */
     async updateByIri(iri: string, skuRequest: SkuRequest): Promise<SkuResponse> {
-        const id = this.extractIdFromIri(iri);
-        return this.update(id, skuRequest);
+        const response = await this.apiClient.put<any>(iri, skuRequest.toJSON());
+        return SkuResponse.fromJSON(response);
     }
 
     /**
@@ -99,7 +99,6 @@ export class SkuService extends BaseService {
      * @param iri Sku IRI
      */
     async deleteByIri(iri: string): Promise<void> {
-        const id = this.extractIdFromIri(iri);
-        await this.delete(id);
+        await this.apiClient.delete(iri);
     }
 }

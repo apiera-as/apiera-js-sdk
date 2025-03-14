@@ -1013,11 +1013,105 @@ var SkuRequestBuilder = class {
   }
 };
 
+// src/dto/request/FileRequest.ts
+var FileRequest = class extends AbstractDTO {
+  /**
+   * Create a new FileRequest
+   *
+   * @param name File name
+   * @param url File URL
+   * @param iri File IRI (used for updates, not sent in requests)
+   */
+  constructor(name = null, url = null, iri = null) {
+    super();
+    this.name = name;
+    this.url = url;
+    this.iri = iri;
+  }
+  /**
+   * Get the file name
+   */
+  getName() {
+    return this.name;
+  }
+  /**
+   * Get the file URL
+   */
+  getUrl() {
+    return this.url;
+  }
+  /**
+   * Get the file IRI
+   */
+  getIri() {
+    return this.iri;
+  }
+  /**
+   * Convert to a plain object for API requests
+   */
+  toJSON() {
+    const data = {};
+    if (this.name !== null) {
+      data.name = this.name;
+    }
+    if (this.url !== null) {
+      data.url = this.url;
+    }
+    return data;
+  }
+  /**
+   * Create a builder for FileRequest
+   */
+  static builder() {
+    return new FileRequestBuilder();
+  }
+};
+var FileRequestBuilder = class {
+  constructor() {
+    this._name = null;
+    this._url = null;
+    this._iri = null;
+  }
+  /**
+   * Set the file name
+   */
+  name(name) {
+    this._name = name;
+    return this;
+  }
+  /**
+   * Set the file URL
+   */
+  url(url) {
+    this._url = url;
+    return this;
+  }
+  /**
+   * Set the file IRI
+   */
+  iri(iri) {
+    this._iri = iri;
+    return this;
+  }
+  /**
+   * Build the FileRequest
+   */
+  build() {
+    return new FileRequest(
+      this._name,
+      this._url,
+      this._iri
+    );
+  }
+};
+
 // src/enum/LdType.ts
 var LdType = /* @__PURE__ */ ((LdType2) => {
   LdType2["Store"] = "Store";
   LdType2["Product"] = "Product";
   LdType2["AlternateIdentifier"] = "AlternateIdentifier";
+  LdType2["Sku"] = "Sku";
+  LdType2["File"] = "File";
   LdType2["Collection"] = "Collection";
   return LdType2;
 })(LdType || {});
@@ -1460,7 +1554,7 @@ var SkuResponse = class _SkuResponse extends AbstractResponse {
   static fromJSON(data) {
     return new _SkuResponse(
       data["@id"] || "",
-      data["@type"] || "AlternateIdentifier" /* AlternateIdentifier */,
+      data["@type"] || "Sku" /* Sku */,
       data.uuid || "",
       new Date(data.createdAt),
       new Date(data.updatedAt),
@@ -1484,6 +1578,119 @@ var SkuCollectionResponse = class _SkuCollectionResponse extends AbstractCollect
     const members = (data.member || []).map((item) => SkuResponse.fromJSON(item));
     const view = data.view ? PartialCollectionView.fromJSON(data.view) : null;
     return new _SkuCollectionResponse(
+      data["@context"] || "",
+      data["@id"] || "",
+      data["@type"] || "Collection" /* Collection */,
+      members,
+      data.totalItems || 0,
+      view
+    );
+  }
+};
+
+// src/dto/response/FileResponse.ts
+var FileResponse = class _FileResponse extends AbstractResponse {
+  /**
+   * Create a new FileResponse
+   *
+   * @param ldId File IRI
+   * @param ldType File type
+   * @param uuid File UUID
+   * @param createdAt Creation timestamp
+   * @param updatedAt Last update timestamp
+   * @param name File name
+   * @param extension File extension
+   * @param mimeType File MIME type
+   * @param url File URL
+   */
+  constructor(ldId, ldType, uuid, createdAt, updatedAt, name, extension = null, mimeType = null, url = null) {
+    super(ldId, ldType, uuid, createdAt, updatedAt);
+    this.name = name;
+    this.extension = extension;
+    this.mimeType = mimeType;
+    this.url = url;
+  }
+  /**
+   * Get the file name
+   */
+  getName() {
+    return this.name;
+  }
+  /**
+   * Get the file extension
+   */
+  getExtension() {
+    return this.extension;
+  }
+  /**
+   * Get the file MIME type
+   */
+  getMimeType() {
+    return this.mimeType;
+  }
+  /**
+   * Get the file URL
+   */
+  getUrl() {
+    return this.url;
+  }
+  /**
+   * Convert to a plain object
+   */
+  toJSON() {
+    return __spreadProps(__spreadValues({}, super.toJSON()), {
+      name: this.name,
+      extension: this.extension,
+      mimeType: this.mimeType,
+      url: this.url
+    });
+  }
+  /**
+   * Create from API JSON data
+   */
+  static fromJSON(data) {
+    return new _FileResponse(
+      data["@id"] || "",
+      data["@type"] || "File" /* File */,
+      data.uuid || "",
+      new Date(data.createdAt),
+      new Date(data.updatedAt),
+      data.name || "",
+      data.extension || null,
+      data.mimeType || null,
+      data.url || null
+    );
+  }
+};
+
+// src/dto/response/FileCollectionResponse.ts
+var FileCollectionResponse = class _FileCollectionResponse extends AbstractCollectionResponse {
+  /**
+   * Create a new FileCollectionResponse
+   *
+   * @param ldContext JSON-LD context
+   * @param ldId Collection IRI
+   * @param ldType Collection type
+   * @param ldMembers Files in the collection
+   * @param ldTotalItems Total number of files
+   * @param ldView Pagination information
+   */
+  constructor(ldContext, ldId, ldType, ldMembers = [], ldTotalItems = 0, ldView = null) {
+    super(ldContext, ldId, ldType, ldMembers, ldTotalItems, ldView);
+  }
+  /**
+   * Get the files in the collection
+   */
+  getLdMembers() {
+    return super.getLdMembers();
+  }
+  /**
+   * Create from API JSON data
+   */
+  static fromJSON(data) {
+    const members = (data.member || []).map((item) => FileResponse.fromJSON(item));
+    const view = data.view ? PartialCollectionView.fromJSON(data.view) : null;
+    return new _FileCollectionResponse(
       data["@context"] || "",
       data["@id"] || "",
       data["@type"] || "Collection" /* Collection */,
@@ -1537,8 +1744,8 @@ var StoreService = class extends BaseService {
    */
   getByIri(iri) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      return this.getById(id);
+      const response = yield this.apiClient.get(iri);
+      return StoreResponse.fromJSON(response);
     });
   }
   /**
@@ -1575,8 +1782,8 @@ var StoreService = class extends BaseService {
    */
   updateByIri(iri, storeRequest) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      return this.update(id, storeRequest);
+      const response = yield this.apiClient.put(iri, storeRequest.toJSON());
+      return StoreResponse.fromJSON(response);
     });
   }
   /**
@@ -1596,8 +1803,7 @@ var StoreService = class extends BaseService {
    */
   deleteByIri(iri) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      yield this.delete(id);
+      yield this.apiClient.delete(iri);
     });
   }
 };
@@ -1659,8 +1865,8 @@ var ProductService = class extends BaseService {
    */
   getByIri(iri) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      return this.getById(id);
+      const response = yield this.apiClient.get(iri);
+      return ProductResponse.fromJSON(response);
     });
   }
   /**
@@ -1697,8 +1903,8 @@ var ProductService = class extends BaseService {
    */
   updateByIri(iri, productRequest) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      return this.update(id, productRequest);
+      const response = yield this.apiClient.put(iri, productRequest.toJSON());
+      return ProductResponse.fromJSON(response);
     });
   }
   /**
@@ -1718,8 +1924,7 @@ var ProductService = class extends BaseService {
    */
   deleteByIri(iri) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      yield this.delete(id);
+      yield this.apiClient.delete(iri);
     });
   }
 };
@@ -1767,8 +1972,8 @@ var AlternateIdentifierService = class extends BaseService {
    */
   getByIri(iri) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      return this.getById(id);
+      const response = yield this.apiClient.get(iri);
+      return AlternateIdentifierResponse.fromJSON(response);
     });
   }
   /**
@@ -1805,8 +2010,8 @@ var AlternateIdentifierService = class extends BaseService {
    */
   updateByIri(iri, request) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      return this.update(id, request);
+      const response = yield this.apiClient.put(iri, request.toJSON());
+      return AlternateIdentifierResponse.fromJSON(response);
     });
   }
   /**
@@ -1826,8 +2031,7 @@ var AlternateIdentifierService = class extends BaseService {
    */
   deleteByIri(iri) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      yield this.delete(id);
+      yield this.apiClient.delete(iri);
     });
   }
 };
@@ -1875,8 +2079,8 @@ var SkuService = class extends BaseService {
    */
   getByIri(iri) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      return this.getById(id);
+      const response = yield this.apiClient.get(iri);
+      return SkuResponse.fromJSON(response);
     });
   }
   /**
@@ -1913,8 +2117,8 @@ var SkuService = class extends BaseService {
    */
   updateByIri(iri, skuRequest) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      return this.update(id, skuRequest);
+      const response = yield this.apiClient.put(iri, skuRequest.toJSON());
+      return SkuResponse.fromJSON(response);
     });
   }
   /**
@@ -1934,8 +2138,88 @@ var SkuService = class extends BaseService {
    */
   deleteByIri(iri) {
     return __async(this, null, function* () {
-      const id = this.extractIdFromIri(iri);
-      yield this.delete(id);
+      yield this.apiClient.delete(iri);
+    });
+  }
+};
+
+// src/services/FileService.ts
+var FileService = class extends BaseService {
+  /**
+   * Create a new file service
+   *
+   * @param apiClient API client
+   */
+  constructor(apiClient) {
+    super(apiClient, "/api/v1/files");
+  }
+  /**
+   * Get all files
+   *
+   * @param queryParams Optional query parameters for filtering, pagination, etc.
+   * @returns Collection of files
+   */
+  getAll(queryParams) {
+    return __async(this, null, function* () {
+      const params = (queryParams == null ? void 0 : queryParams.toJSON()) || {};
+      const response = yield this.apiClient.get(this.basePath, params);
+      return FileCollectionResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Get a file by ID
+   *
+   * @param id File ID
+   * @returns File data
+   */
+  getById(id) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(`${this.basePath}/${id}`);
+      return FileResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Get a file by IRI
+   *
+   * @param iri File IRI
+   * @returns File data
+   */
+  getByIri(iri) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(iri);
+      return FileResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Create a new file
+   *
+   * @param fileRequest File data
+   * @returns The created file
+   */
+  create(fileRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.post(this.basePath, fileRequest.toJSON());
+      return FileResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Delete a file
+   *
+   * @param id File ID
+   */
+  delete(id) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(`${this.basePath}/${id}`);
+    });
+  }
+  /**
+   * Delete a file by IRI
+   *
+   * @param iri File IRI
+   */
+  deleteByIri(iri) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(iri);
     });
   }
 };
@@ -1966,6 +2250,7 @@ var ApieraSdk = class {
     this.store = new StoreService(this.apiClient);
     this.alternateIdentifier = new AlternateIdentifierService(this.apiClient);
     this.sku = new SkuService(this.apiClient);
+    this.file = new FileService(this.apiClient);
   }
   /**
    * Get a product service for a specific store
@@ -2023,6 +2308,11 @@ export {
   ApiError,
   ApieraSdk,
   BaseService,
+  FileCollectionResponse,
+  FileRequest,
+  FileRequestBuilder,
+  FileResponse,
+  FileService,
   LdType,
   PartialCollectionView,
   ProductCollectionResponse,

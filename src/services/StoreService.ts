@@ -48,8 +48,8 @@ export class StoreService extends BaseService {
      * @returns Store data
      */
     async getByIri(iri: string): Promise<StoreResponse> {
-        const id = this.extractIdFromIri(iri);
-        return this.getById(id);
+        const response = await this.apiClient.get<any>(iri);
+        return StoreResponse.fromJSON(response);
     }
 
     /**
@@ -83,8 +83,8 @@ export class StoreService extends BaseService {
      * @returns The updated store
      */
     async updateByIri(iri: string, storeRequest: StoreRequest): Promise<StoreResponse> {
-        const id = this.extractIdFromIri(iri);
-        return this.update(id, storeRequest);
+        const response = await this.apiClient.put<any>(iri, storeRequest.toJSON());
+        return StoreResponse.fromJSON(response);
     }
 
     /**
@@ -102,7 +102,6 @@ export class StoreService extends BaseService {
      * @param iri Store IRI
      */
     async deleteByIri(iri: string): Promise<void> {
-        const id = this.extractIdFromIri(iri);
-        await this.delete(id);
+        await this.apiClient.delete(iri);
     }
 }

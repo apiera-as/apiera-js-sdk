@@ -1,5 +1,16 @@
-import { ApiClient, ApiClientConfig, TokenProvider, TokenStore } from './core';
-import { StoreService } from './services';
+// ApieraSdk.ts
+import { ApiClient, TokenProvider, TokenStore } from './core';
+import {
+    StoreService,
+    ProductService,
+    AlternateIdentifierService,
+    SkuService,
+    FileService,
+    IntegrationService,
+    AttributeService,
+    AttributeTermService,
+    BrandService
+} from './services';
 
 /**
  * Configuration options for the Apiera SDK
@@ -42,6 +53,10 @@ export class ApieraSdk {
      * Services
      */
     readonly store: StoreService;
+    readonly alternateIdentifier: AlternateIdentifierService;
+    readonly sku: SkuService;
+    readonly file: FileService;
+    readonly integration: IntegrationService;
 
     /**
      * Create a new Apiera SDK instance
@@ -73,6 +88,50 @@ export class ApieraSdk {
 
         // Initialize services
         this.store = new StoreService(this.apiClient);
+        this.alternateIdentifier = new AlternateIdentifierService(this.apiClient);
+        this.sku = new SkuService(this.apiClient);
+        this.file = new FileService(this.apiClient);
+        this.integration = new IntegrationService(this.apiClient);
+    }
+
+    /**
+     * Get a product service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Product service for the specified store
+     */
+    getProductService(storeIri: string): ProductService {
+        return new ProductService(this.apiClient, storeIri);
+    }
+
+    /**
+     * Get an attribute service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Attribute service for the specified store
+     */
+    getAttributeService(storeIri: string): AttributeService {
+        return new AttributeService(this.apiClient, storeIri);
+    }
+
+    /**
+     * Get an attribute term service for a specific attribute
+     *
+     * @param attributeIri Attribute IRI (e.g., "/api/v1/stores/123/attributes/456" or "https://api.apiera.com/api/v1/stores/123/attributes/456")
+     * @returns Attribute term service for the specified attribute
+     */
+    getAttributeTermService(attributeIri: string): AttributeTermService {
+        return new AttributeTermService(this.apiClient, attributeIri);
+    }
+
+    /**
+     * Get a brand service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Brand service for the specified store
+     */
+    getBrandService(storeIri: string): BrandService {
+        return new BrandService(this.apiClient, storeIri);
     }
 
     /**

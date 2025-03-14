@@ -1,11 +1,19 @@
 {
   "name": "apiera-js-sdk",
-  "version": "1.0.0",
+  "version": "1.7.0",
   "description": "TypeScript SDK for Apiera API",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsup src/index.ts --format cjs,esm --dts",
     "clean": "rimraf dist",
     "test": "jest",
     "lint": "eslint src --ext .ts",
@@ -28,6 +36,7 @@
   "license": "ISC",
   "files": [
     "dist",
+    "src",
     "LICENSE",
     "README.md",
     "package.json"
@@ -44,6 +53,7 @@
     "rimraf": "^5.0.7",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
+    "tsup": "^8.0.2",
     "typescript": "^5.8.2"
   },
   "dependencies": {

@@ -15,6 +15,6 @@
 !.eslintrc.js
 
 # Exclude distribution/build folders
-dist/
-build/
-lib/
+/dist/
+/build/
+/lib/

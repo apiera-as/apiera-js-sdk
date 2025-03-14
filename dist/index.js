@@ -79,12 +79,33 @@ __export(index_exports, {
   ApiClient: () => ApiClient,
   ApiError: () => ApiError,
   ApieraSdk: () => ApieraSdk,
+  AttributeCollectionResponse: () => AttributeCollectionResponse,
+  AttributeRequest: () => AttributeRequest,
+  AttributeRequestBuilder: () => AttributeRequestBuilder,
+  AttributeResponse: () => AttributeResponse,
+  AttributeService: () => AttributeService,
+  AttributeTermCollectionResponse: () => AttributeTermCollectionResponse,
+  AttributeTermRequest: () => AttributeTermRequest,
+  AttributeTermRequestBuilder: () => AttributeTermRequestBuilder,
+  AttributeTermResponse: () => AttributeTermResponse,
+  AttributeTermService: () => AttributeTermService,
   BaseService: () => BaseService,
   FileCollectionResponse: () => FileCollectionResponse,
   FileRequest: () => FileRequest,
   FileRequestBuilder: () => FileRequestBuilder,
   FileResponse: () => FileResponse,
   FileService: () => FileService,
+  IntegrationCollectionResponse: () => IntegrationCollectionResponse,
+  IntegrationEventRequest: () => IntegrationEventRequest,
+  IntegrationEventRequestBuilder: () => IntegrationEventRequestBuilder,
+  IntegrationEventResponse: () => IntegrationEventResponse,
+  IntegrationEventType: () => IntegrationEventType,
+  IntegrationProtocol: () => IntegrationProtocol,
+  IntegrationRequest: () => IntegrationRequest,
+  IntegrationRequestBuilder: () => IntegrationRequestBuilder,
+  IntegrationResponse: () => IntegrationResponse,
+  IntegrationService: () => IntegrationService,
+  IntegrationStatus: () => IntegrationStatus,
   LdType: () => LdType,
   PartialCollectionView: () => PartialCollectionView,
   ProductCollectionResponse: () => ProductCollectionResponse,
@@ -1052,12 +1073,16 @@ var AlternateIdentifierRequestBuilder = class {
 
 // src/dto/request/SkuRequest.ts
 var SkuRequest = class extends AbstractDTO {
-  constructor(code = null) {
+  constructor(code = null, iri = null) {
     super();
     this.code = code;
+    this.iri = iri;
   }
   getCode() {
     return this.code;
+  }
+  getIri() {
+    return this.iri;
   }
   toJSON() {
     const data = {};
@@ -1071,14 +1096,20 @@ var SkuRequest = class extends AbstractDTO {
 var SkuRequestBuilder = class {
   constructor() {
     this._code = null;
+    this._iri = null;
   }
   code(code) {
     this._code = code;
     return this;
   }
+  iri(iri) {
+    this._iri = iri;
+    return this;
+  }
   build() {
     return new SkuRequest(
-      this._code
+      this._code,
+      this._iri
     );
   }
 };
@@ -1175,6 +1206,370 @@ var FileRequestBuilder = class {
   }
 };
 
+// src/dto/request/IntegrationEventRequest.ts
+var IntegrationEventRequest = class extends AbstractDTO {
+  /**
+   * Create a new IntegrationEventRequest
+   *
+   * @param eventType Event type
+   * @param onCreate Fire on create
+   * @param onUpdate Fire on update
+   * @param onDelete Fire on delete
+   * @param store Store IRI (optional)
+   * @param iri Integration event IRI (used for updates, not sent in requests)
+   */
+  constructor(eventType = null, onCreate = null, onUpdate = null, onDelete = null, store = null, iri = null) {
+    super();
+    this.eventType = eventType;
+    this.onCreate = onCreate;
+    this.onUpdate = onUpdate;
+    this.onDelete = onDelete;
+    this.store = store;
+    this.iri = iri;
+  }
+  /**
+   * Get the event type
+   */
+  getEventType() {
+    return this.eventType;
+  }
+  /**
+   * Get onCreate flag
+   */
+  getOnCreate() {
+    return this.onCreate;
+  }
+  /**
+   * Get onUpdate flag
+   */
+  getOnUpdate() {
+    return this.onUpdate;
+  }
+  /**
+   * Get onDelete flag
+   */
+  getOnDelete() {
+    return this.onDelete;
+  }
+  /**
+   * Get the store IRI
+   */
+  getStore() {
+    return this.store;
+  }
+  /**
+   * Get the event IRI
+   */
+  getIri() {
+    return this.iri;
+  }
+  /**
+   * Convert to a plain object for API requests
+   */
+  toJSON() {
+    const data = {};
+    if (this.eventType !== null) {
+      data.eventType = this.eventType;
+    }
+    if (this.onCreate !== null) {
+      data.onCreate = this.onCreate;
+    }
+    if (this.onUpdate !== null) {
+      data.onUpdate = this.onUpdate;
+    }
+    if (this.onDelete !== null) {
+      data.onDelete = this.onDelete;
+    }
+    if (this.store !== null) {
+      data.store = this.store;
+    }
+    return data;
+  }
+  /**
+   * Create a builder for IntegrationEventRequest
+   */
+  static builder() {
+    return new IntegrationEventRequestBuilder();
+  }
+};
+var IntegrationEventRequestBuilder = class {
+  constructor() {
+    this._eventType = null;
+    this._onCreate = null;
+    this._onUpdate = null;
+    this._onDelete = null;
+    this._store = null;
+    this._iri = null;
+  }
+  /**
+   * Set the event type
+   */
+  eventType(eventType) {
+    this._eventType = eventType;
+    return this;
+  }
+  /**
+   * Set the onCreate flag
+   */
+  onCreate(onCreate) {
+    this._onCreate = onCreate;
+    return this;
+  }
+  /**
+   * Set the onUpdate flag
+   */
+  onUpdate(onUpdate) {
+    this._onUpdate = onUpdate;
+    return this;
+  }
+  /**
+   * Set the onDelete flag
+   */
+  onDelete(onDelete) {
+    this._onDelete = onDelete;
+    return this;
+  }
+  /**
+   * Set the store IRI
+   */
+  store(store) {
+    this._store = store;
+    return this;
+  }
+  /**
+   * Set the event IRI
+   */
+  iri(iri) {
+    this._iri = iri;
+    return this;
+  }
+  /**
+   * Build the IntegrationEventRequest
+   */
+  build() {
+    return new IntegrationEventRequest(
+      this._eventType,
+      this._onCreate,
+      this._onUpdate,
+      this._onDelete,
+      this._store,
+      this._iri
+    );
+  }
+};
+
+// src/dto/request/IntegrationRequest.ts
+var IntegrationRequest = class extends AbstractDTO {
+  /**
+   * Create a new IntegrationRequest
+   *
+   * @param name Integration name
+   * @param protocol Integration protocol
+   * @param status Integration status
+   * @param events Integration events
+   * @param iri Integration IRI (used for updates, not sent in requests)
+   */
+  constructor(name = null, protocol = null, status = null, events = null, iri = null) {
+    super();
+    this.name = name;
+    this.protocol = protocol;
+    this.status = status;
+    this.events = events;
+    this.iri = iri;
+  }
+  /**
+   * Get the integration name
+   */
+  getName() {
+    return this.name;
+  }
+  /**
+   * Get the integration protocol
+   */
+  getProtocol() {
+    return this.protocol;
+  }
+  /**
+   * Get the integration status
+   */
+  getStatus() {
+    return this.status;
+  }
+  /**
+   * Get the integration events
+   */
+  getEvents() {
+    return this.events;
+  }
+  /**
+   * Get the integration IRI
+   */
+  getIri() {
+    return this.iri;
+  }
+  /**
+   * Convert to a plain object for API requests
+   */
+  toJSON() {
+    const data = {};
+    if (this.name !== null) {
+      data.name = this.name;
+    }
+    if (this.protocol !== null) {
+      data.protocol = this.protocol;
+    }
+    if (this.status !== null) {
+      data.status = this.status;
+    }
+    if (this.events !== null && this.events.length > 0) {
+      data.events = this.events.map((event) => event.toJSON());
+    }
+    return data;
+  }
+  /**
+   * Create a builder for IntegrationRequest
+   */
+  static builder() {
+    return new IntegrationRequestBuilder();
+  }
+};
+var IntegrationRequestBuilder = class {
+  constructor() {
+    this._name = null;
+    this._protocol = null;
+    this._status = null;
+    this._events = null;
+    this._iri = null;
+  }
+  /**
+   * Set the integration name
+   */
+  name(name) {
+    this._name = name;
+    return this;
+  }
+  /**
+   * Set the integration protocol
+   */
+  protocol(protocol) {
+    this._protocol = protocol;
+    return this;
+  }
+  /**
+   * Set the integration status
+   */
+  status(status) {
+    this._status = status;
+    return this;
+  }
+  /**
+   * Set the integration events
+   */
+  events(events) {
+    this._events = events;
+    return this;
+  }
+  /**
+   * Set the integration IRI
+   */
+  iri(iri) {
+    this._iri = iri;
+    return this;
+  }
+  /**
+   * Build the IntegrationRequest
+   */
+  build() {
+    return new IntegrationRequest(
+      this._name,
+      this._protocol,
+      this._status,
+      this._events,
+      this._iri
+    );
+  }
+};
+
+// src/dto/request/AttributeRequest.ts
+var AttributeRequest = class extends AbstractDTO {
+  constructor(name = null, iri = null) {
+    super();
+    this.name = name;
+    this.iri = iri;
+  }
+  getName() {
+    return this.name;
+  }
+  getIri() {
+    return this.iri;
+  }
+  toJSON() {
+    const data = {};
+    if (this.name !== null) data.name = this.name;
+    return data;
+  }
+  static builder() {
+    return new AttributeRequestBuilder();
+  }
+};
+var AttributeRequestBuilder = class {
+  constructor() {
+    this._name = null;
+    this._iri = null;
+  }
+  name(name) {
+    this._name = name;
+    return this;
+  }
+  iri(iri) {
+    this._iri = iri;
+    return this;
+  }
+  build() {
+    return new AttributeRequest(this._name, this._iri);
+  }
+};
+
+// src/dto/request/AttributeTermRequest.ts
+var AttributeTermRequest = class extends AbstractDTO {
+  constructor(name = null, iri = null) {
+    super();
+    this.name = name;
+    this.iri = iri;
+  }
+  getName() {
+    return this.name;
+  }
+  getIri() {
+    return this.iri;
+  }
+  toJSON() {
+    const data = {};
+    if (this.name !== null) data.name = this.name;
+    return data;
+  }
+  static builder() {
+    return new AttributeTermRequestBuilder();
+  }
+};
+var AttributeTermRequestBuilder = class {
+  constructor() {
+    this._name = null;
+    this._iri = null;
+  }
+  name(name) {
+    this._name = name;
+    return this;
+  }
+  iri(iri) {
+    this._iri = iri;
+    return this;
+  }
+  build() {
+    return new AttributeTermRequest(this._name, this._iri);
+  }
+};
+
 // src/enum/LdType.ts
 var LdType = /* @__PURE__ */ ((LdType2) => {
   LdType2["Store"] = "Store";
@@ -1182,6 +1577,10 @@ var LdType = /* @__PURE__ */ ((LdType2) => {
   LdType2["AlternateIdentifier"] = "AlternateIdentifier";
   LdType2["Sku"] = "Sku";
   LdType2["File"] = "File";
+  LdType2["Integration"] = "Integration";
+  LdType2["IntegrationEvent"] = "IntegrationEvent";
+  LdType2["Attribute"] = "Attribute";
+  LdType2["AttributeTerm"] = "AttributeTerm";
   LdType2["Collection"] = "Collection";
   return LdType2;
 })(LdType || {});
@@ -1202,6 +1601,43 @@ var AlternateIdentifierType = /* @__PURE__ */ ((AlternateIdentifierType2) => {
   AlternateIdentifierType2["CUSTOM"] = "custom";
   return AlternateIdentifierType2;
 })(AlternateIdentifierType || {});
+
+// src/enum/IntegrationEventType.ts
+var IntegrationEventType = /* @__PURE__ */ ((IntegrationEventType2) => {
+  IntegrationEventType2["ATTRIBUTE"] = "attribute";
+  IntegrationEventType2["ATTRIBUTE_TERM"] = "attribute_term";
+  IntegrationEventType2["BRAND"] = "brand";
+  IntegrationEventType2["CATEGORY"] = "category";
+  IntegrationEventType2["DISTRIBUTOR"] = "distributor";
+  IntegrationEventType2["FILE"] = "file";
+  IntegrationEventType2["INTEGRATION_RESOURCE_MAP"] = "integration_resource_map";
+  IntegrationEventType2["INVENTORY"] = "inventory";
+  IntegrationEventType2["INVENTORY_LOCATION"] = "inventory_location";
+  IntegrationEventType2["PRODUCT"] = "product";
+  IntegrationEventType2["SKU"] = "sku";
+  IntegrationEventType2["STORE"] = "store";
+  IntegrationEventType2["TAG"] = "tag";
+  IntegrationEventType2["VARIANT"] = "variant";
+  IntegrationEventType2["ALTERNATE_IDENTIFIER"] = "alternate_identifier";
+  IntegrationEventType2["PROPERTY"] = "property";
+  IntegrationEventType2["PROPERTY_TERM"] = "property_term";
+  return IntegrationEventType2;
+})(IntegrationEventType || {});
+
+// src/enum/IntegrationProtocol.ts
+var IntegrationProtocol = /* @__PURE__ */ ((IntegrationProtocol2) => {
+  IntegrationProtocol2["RABBITMQ"] = "rabbitmq";
+  IntegrationProtocol2["WEBHOOK"] = "webhook";
+  IntegrationProtocol2["NONE"] = "none";
+  return IntegrationProtocol2;
+})(IntegrationProtocol || {});
+
+// src/enum/IntegrationStatus.ts
+var IntegrationStatus = /* @__PURE__ */ ((IntegrationStatus2) => {
+  IntegrationStatus2["ACTIVE"] = "active";
+  IntegrationStatus2["INACTIVE"] = "inactive";
+  return IntegrationStatus2;
+})(IntegrationStatus || {});
 
 // src/dto/response/StoreResponse.ts
 var StoreResponse = class _StoreResponse extends AbstractResponse {
@@ -1771,6 +2207,321 @@ var FileCollectionResponse = class _FileCollectionResponse extends AbstractColle
   }
 };
 
+// src/dto/response/IntegrationEventResponse.ts
+var IntegrationEventResponse = class _IntegrationEventResponse extends AbstractResponse {
+  /**
+   * Create a new IntegrationEventResponse
+   *
+   * @param ldId Event IRI
+   * @param ldType Event type
+   * @param uuid Event UUID
+   * @param createdAt Creation timestamp
+   * @param updatedAt Last update timestamp
+   * @param eventType Event type
+   * @param onCreate Fire on create
+   * @param onUpdate Fire on update
+   * @param onDelete Fire on delete
+   * @param store Store IRI
+   */
+  constructor(ldId, ldType, uuid, createdAt, updatedAt, eventType, onCreate, onUpdate, onDelete, store = null) {
+    super(ldId, ldType, uuid, createdAt, updatedAt);
+    this.eventType = eventType;
+    this.onCreate = onCreate;
+    this.onUpdate = onUpdate;
+    this.onDelete = onDelete;
+    this.store = store;
+  }
+  /**
+   * Get the event type
+   */
+  getEventType() {
+    return this.eventType;
+  }
+  /**
+   * Get onCreate flag
+   */
+  getOnCreate() {
+    return this.onCreate;
+  }
+  /**
+   * Get onUpdate flag
+   */
+  getOnUpdate() {
+    return this.onUpdate;
+  }
+  /**
+   * Get onDelete flag
+   */
+  getOnDelete() {
+    return this.onDelete;
+  }
+  /**
+   * Get the store IRI
+   */
+  getStore() {
+    return this.store;
+  }
+  /**
+   * Convert to a plain object
+   */
+  toJSON() {
+    return __spreadProps(__spreadValues({}, super.toJSON()), {
+      eventType: this.eventType,
+      onCreate: this.onCreate,
+      onUpdate: this.onUpdate,
+      onDelete: this.onDelete,
+      store: this.store
+    });
+  }
+  /**
+   * Create from API JSON data
+   */
+  static fromJSON(data) {
+    return new _IntegrationEventResponse(
+      data["@id"] || "",
+      data["@type"] || "IntegrationEvent" /* IntegrationEvent */,
+      data.uuid || "",
+      new Date(data.createdAt),
+      new Date(data.updatedAt),
+      data.eventType,
+      data.onCreate || false,
+      data.onUpdate || false,
+      data.onDelete || false,
+      data.store || null
+    );
+  }
+};
+
+// src/dto/response/IntegrationResponse.ts
+var IntegrationResponse = class _IntegrationResponse extends AbstractResponse {
+  /**
+   * Create a new IntegrationResponse
+   *
+   * @param ldId Integration IRI
+   * @param ldType Integration type
+   * @param uuid Integration UUID
+   * @param createdAt Creation timestamp
+   * @param updatedAt Last update timestamp
+   * @param name Integration name
+   * @param protocol Integration protocol
+   * @param status Integration status
+   * @param events Integration events
+   */
+  constructor(ldId, ldType, uuid, createdAt, updatedAt, name, protocol, status, events = []) {
+    super(ldId, ldType, uuid, createdAt, updatedAt);
+    this.name = name;
+    this.protocol = protocol;
+    this.status = status;
+    this.events = events;
+  }
+  /**
+   * Get the integration name
+   */
+  getName() {
+    return this.name;
+  }
+  /**
+   * Get the integration protocol
+   */
+  getProtocol() {
+    return this.protocol;
+  }
+  /**
+   * Get the integration status
+   */
+  getStatus() {
+    return this.status;
+  }
+  /**
+   * Get the integration events
+   */
+  getEvents() {
+    return this.events;
+  }
+  /**
+   * Convert to a plain object
+   */
+  toJSON() {
+    return __spreadProps(__spreadValues({}, super.toJSON()), {
+      name: this.name,
+      protocol: this.protocol,
+      status: this.status,
+      events: this.events.map((event) => event.toJSON())
+    });
+  }
+  /**
+   * Create from API JSON data
+   */
+  static fromJSON(data) {
+    const events = (data.events || []).map(
+      (eventData) => IntegrationEventResponse.fromJSON(eventData)
+    );
+    return new _IntegrationResponse(
+      data["@id"] || "",
+      data["@type"] || "Integration" /* Integration */,
+      data.uuid || "",
+      new Date(data.createdAt),
+      new Date(data.updatedAt),
+      data.name || "",
+      data.protocol || "none" /* NONE */,
+      data.status || "inactive" /* INACTIVE */,
+      events
+    );
+  }
+};
+
+// src/dto/response/IntegrationCollectionResponse.ts
+var IntegrationCollectionResponse = class _IntegrationCollectionResponse extends AbstractCollectionResponse {
+  /**
+   * Create a new IntegrationCollectionResponse
+   *
+   * @param ldContext JSON-LD context
+   * @param ldId Collection IRI
+   * @param ldType Collection type
+   * @param ldMembers Integrations in the collection
+   * @param ldTotalItems Total number of integrations
+   * @param ldView Pagination information
+   */
+  constructor(ldContext, ldId, ldType, ldMembers = [], ldTotalItems = 0, ldView = null) {
+    super(ldContext, ldId, ldType, ldMembers, ldTotalItems, ldView);
+  }
+  /**
+   * Get the integrations in the collection
+   */
+  getLdMembers() {
+    return super.getLdMembers();
+  }
+  /**
+   * Create from API JSON data
+   */
+  static fromJSON(data) {
+    const members = (data.member || []).map((item) => IntegrationResponse.fromJSON(item));
+    const view = data.view ? PartialCollectionView.fromJSON(data.view) : null;
+    return new _IntegrationCollectionResponse(
+      data["@context"] || "",
+      data["@id"] || "",
+      data["@type"] || "Collection" /* Collection */,
+      members,
+      data.totalItems || 0,
+      view
+    );
+  }
+};
+
+// src/dto/response/AttributeResponse.ts
+var AttributeResponse = class _AttributeResponse extends AbstractResponse {
+  constructor(ldId, ldType, uuid, createdAt, updatedAt, name, store) {
+    super(ldId, ldType, uuid, createdAt, updatedAt);
+    this.name = name;
+    this.store = store;
+  }
+  getName() {
+    return this.name;
+  }
+  getStore() {
+    return this.store;
+  }
+  toJSON() {
+    return __spreadProps(__spreadValues({}, super.toJSON()), {
+      name: this.name,
+      store: this.store
+    });
+  }
+  static fromJSON(data) {
+    return new _AttributeResponse(
+      data["@id"] || "",
+      data["@type"] || "Attribute" /* Attribute */,
+      data.uuid || "",
+      new Date(data.createdAt),
+      new Date(data.updatedAt),
+      data.name || "",
+      data.store || ""
+    );
+  }
+};
+
+// src/dto/response/AttributeCollectionResponse.ts
+var AttributeCollectionResponse = class _AttributeCollectionResponse extends AbstractCollectionResponse {
+  constructor(ldContext, ldId, ldType, ldMembers = [], ldTotalItems = 0, ldView = null) {
+    super(ldContext, ldId, ldType, ldMembers, ldTotalItems, ldView);
+  }
+  getLdMembers() {
+    return super.getLdMembers();
+  }
+  static fromJSON(data) {
+    const members = (data.member || []).map((item) => AttributeResponse.fromJSON(item));
+    const view = data.view ? PartialCollectionView.fromJSON(data.view) : null;
+    return new _AttributeCollectionResponse(
+      data["@context"] || "",
+      data["@id"] || "",
+      data["@type"] || "Collection" /* Collection */,
+      members,
+      data.totalItems || 0,
+      view
+    );
+  }
+};
+
+// src/dto/response/AttributeTermResponse.ts
+var AttributeTermResponse = class _AttributeTermResponse extends AbstractResponse {
+  constructor(ldId, ldType, uuid, createdAt, updatedAt, name, attribute, store) {
+    super(ldId, ldType, uuid, createdAt, updatedAt);
+    this.name = name;
+    this.attribute = attribute;
+    this.store = store;
+  }
+  getName() {
+    return this.name;
+  }
+  getAttribute() {
+    return this.attribute;
+  }
+  getStore() {
+    return this.store;
+  }
+  toJSON() {
+    return __spreadProps(__spreadValues({}, super.toJSON()), {
+      name: this.name,
+      attribute: this.attribute,
+      store: this.store
+    });
+  }
+  static fromJSON(data) {
+    return new _AttributeTermResponse(
+      data["@id"] || "",
+      data["@type"] || "AttributeTerm" /* AttributeTerm */,
+      data.uuid || "",
+      new Date(data.createdAt),
+      new Date(data.updatedAt),
+      data.name || "",
+      data.attribute || "",
+      data.store || ""
+    );
+  }
+};
+
+// src/dto/response/AttributeTermCollectionResponse.ts
+var AttributeTermCollectionResponse = class _AttributeTermCollectionResponse extends AbstractCollectionResponse {
+  constructor(ldContext, ldId, ldType, ldMembers = [], ldTotalItems = 0, ldView = null) {
+    super(ldContext, ldId, ldType, ldMembers, ldTotalItems, ldView);
+  }
+  getLdMembers() {
+    return super.getLdMembers();
+  }
+  static fromJSON(data) {
+    const members = (data.member || []).map((item) => AttributeTermResponse.fromJSON(item));
+    const view = data.view ? PartialCollectionView.fromJSON(data.view) : null;
+    return new _AttributeTermCollectionResponse(
+      data["@context"] || "",
+      data["@id"] || "",
+      data["@type"] || "Collection" /* Collection */,
+      members,
+      data.totalItems || 0,
+      view
+    );
+  }
+};
+
 // src/services/StoreService.ts
 var StoreService = class extends BaseService {
   /**
@@ -2294,6 +3045,240 @@ var FileService = class extends BaseService {
   }
 };
 
+// src/services/IntegrationService.ts
+var IntegrationService = class extends BaseService {
+  /**
+   * Create a new integration service
+   *
+   * @param apiClient API client
+   */
+  constructor(apiClient) {
+    super(apiClient, "/api/v1/integrations");
+  }
+  /**
+   * Get all integrations
+   *
+   * @param queryParams Optional query parameters for filtering, pagination, etc.
+   * @returns Collection of integrations
+   */
+  getAll(queryParams) {
+    return __async(this, null, function* () {
+      const params = (queryParams == null ? void 0 : queryParams.toJSON()) || {};
+      const response = yield this.apiClient.get(this.basePath, params);
+      return IntegrationCollectionResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Get an integration by ID
+   *
+   * @param id Integration ID
+   * @returns Integration data
+   */
+  getById(id) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(`${this.basePath}/${id}`);
+      return IntegrationResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Get an integration by IRI
+   *
+   * @param iri Integration IRI
+   * @returns Integration data
+   */
+  getByIri(iri) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(iri);
+      return IntegrationResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Create a new integration
+   *
+   * @param integrationRequest Integration data
+   * @returns The created integration
+   */
+  create(integrationRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.post(this.basePath, integrationRequest.toJSON());
+      return IntegrationResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Update an existing integration
+   *
+   * @param id Integration ID
+   * @param integrationRequest Updated integration data
+   * @returns The updated integration
+   */
+  update(id, integrationRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(`${this.basePath}/${id}`, integrationRequest.toJSON());
+      return IntegrationResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Update an integration by IRI
+   *
+   * @param iri Integration IRI
+   * @param integrationRequest Updated integration data
+   * @returns The updated integration
+   */
+  updateByIri(iri, integrationRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(iri, integrationRequest.toJSON());
+      return IntegrationResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Delete an integration
+   *
+   * @param id Integration ID
+   */
+  delete(id) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(`${this.basePath}/${id}`);
+    });
+  }
+  /**
+   * Delete an integration by IRI
+   *
+   * @param iri Integration IRI
+   */
+  deleteByIri(iri) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(iri);
+    });
+  }
+};
+
+// src/services/AttributeTermService.ts
+var AttributeTermService = class extends BaseService {
+  constructor(apiClient, attributeIri) {
+    super(apiClient, "");
+    if (attributeIri.startsWith("http") || attributeIri.startsWith("/api")) {
+      this.resourcePath = `${attributeIri}/terms`;
+    } else {
+      this.resourcePath = `${attributeIri}/terms`;
+    }
+  }
+  getAll(queryParams) {
+    return __async(this, null, function* () {
+      const params = (queryParams == null ? void 0 : queryParams.toJSON()) || {};
+      const response = yield this.apiClient.get(this.resourcePath, params);
+      return AttributeTermCollectionResponse.fromJSON(response);
+    });
+  }
+  getById(id) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(`${this.resourcePath}/${id}`);
+      return AttributeTermResponse.fromJSON(response);
+    });
+  }
+  getByIri(iri) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(iri);
+      return AttributeTermResponse.fromJSON(response);
+    });
+  }
+  create(termRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.post(this.resourcePath, termRequest.toJSON());
+      return AttributeTermResponse.fromJSON(response);
+    });
+  }
+  update(id, termRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(`${this.resourcePath}/${id}`, termRequest.toJSON());
+      return AttributeTermResponse.fromJSON(response);
+    });
+  }
+  updateByIri(iri, termRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(iri, termRequest.toJSON());
+      return AttributeTermResponse.fromJSON(response);
+    });
+  }
+  delete(id) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(`${this.resourcePath}/${id}`);
+    });
+  }
+  deleteByIri(iri) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(iri);
+    });
+  }
+};
+
+// src/services/AttributeService.ts
+var AttributeService = class extends BaseService {
+  constructor(apiClient, storeIri) {
+    super(apiClient, "");
+    this.storeIri = storeIri;
+    const storeId = this.extractIdFromIri(storeIri);
+    this.resourcePath = `/api/v1/stores/${storeId}/attributes`;
+  }
+  setStoreIri(storeIri) {
+    this.storeIri = storeIri;
+    const storeId = this.extractIdFromIri(storeIri);
+    this.resourcePath = `/api/v1/stores/${storeId}/attributes`;
+  }
+  getAll(queryParams) {
+    return __async(this, null, function* () {
+      const params = (queryParams == null ? void 0 : queryParams.toJSON()) || {};
+      const response = yield this.apiClient.get(this.resourcePath, params);
+      return AttributeCollectionResponse.fromJSON(response);
+    });
+  }
+  getById(id) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(`${this.resourcePath}/${id}`);
+      return AttributeResponse.fromJSON(response);
+    });
+  }
+  getByIri(iri) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(iri);
+      return AttributeResponse.fromJSON(response);
+    });
+  }
+  create(attributeRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.post(this.resourcePath, attributeRequest.toJSON());
+      return AttributeResponse.fromJSON(response);
+    });
+  }
+  update(id, attributeRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(`${this.resourcePath}/${id}`, attributeRequest.toJSON());
+      return AttributeResponse.fromJSON(response);
+    });
+  }
+  updateByIri(iri, attributeRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(iri, attributeRequest.toJSON());
+      return AttributeResponse.fromJSON(response);
+    });
+  }
+  delete(id) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(`${this.resourcePath}/${id}`);
+    });
+  }
+  deleteByIri(iri) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(iri);
+    });
+  }
+  getAttributeTermService(attributeId) {
+    return new AttributeTermService(this.apiClient, `${this.resourcePath}/${attributeId}`);
+  }
+  getAttributeTermServiceByIri(attributeIri) {
+    return new AttributeTermService(this.apiClient, attributeIri);
+  }
+};
+
 // src/ApieraSdk.ts
 var ApieraSdk = class {
   /**
@@ -2321,6 +3306,7 @@ var ApieraSdk = class {
     this.alternateIdentifier = new AlternateIdentifierService(this.apiClient);
     this.sku = new SkuService(this.apiClient);
     this.file = new FileService(this.apiClient);
+    this.integration = new IntegrationService(this.apiClient);
   }
   /**
    * Get a product service for a specific store
@@ -2330,6 +3316,24 @@ var ApieraSdk = class {
    */
   getProductService(storeIri) {
     return new ProductService(this.apiClient, storeIri);
+  }
+  /**
+   * Get an attribute service for a specific store
+   *
+   * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+   * @returns Attribute service for the specified store
+   */
+  getAttributeService(storeIri) {
+    return new AttributeService(this.apiClient, storeIri);
+  }
+  /**
+   * Get an attribute term service for a specific attribute
+   *
+   * @param attributeIri Attribute IRI (e.g., "/api/v1/stores/123/attributes/456" or "https://api.apiera.com/api/v1/stores/123/attributes/456")
+   * @returns Attribute term service for the specified attribute
+   */
+  getAttributeTermService(attributeIri) {
+    return new AttributeTermService(this.apiClient, attributeIri);
   }
   /**
    * Set an authentication token
@@ -2378,12 +3382,33 @@ var ApieraSdk = class {
   ApiClient,
   ApiError,
   ApieraSdk,
+  AttributeCollectionResponse,
+  AttributeRequest,
+  AttributeRequestBuilder,
+  AttributeResponse,
+  AttributeService,
+  AttributeTermCollectionResponse,
+  AttributeTermRequest,
+  AttributeTermRequestBuilder,
+  AttributeTermResponse,
+  AttributeTermService,
   BaseService,
   FileCollectionResponse,
   FileRequest,
   FileRequestBuilder,
   FileResponse,
   FileService,
+  IntegrationCollectionResponse,
+  IntegrationEventRequest,
+  IntegrationEventRequestBuilder,
+  IntegrationEventResponse,
+  IntegrationEventType,
+  IntegrationProtocol,
+  IntegrationRequest,
+  IntegrationRequestBuilder,
+  IntegrationResponse,
+  IntegrationService,
+  IntegrationStatus,
   LdType,
   PartialCollectionView,
   ProductCollectionResponse,

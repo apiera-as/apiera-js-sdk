@@ -128,6 +128,10 @@ declare enum LdType {
     AlternateIdentifier = "AlternateIdentifier",
     Sku = "Sku",
     File = "File",
+    Integration = "Integration",
+    IntegrationEvent = "IntegrationEvent",
+    Attribute = "Attribute",
+    AttributeTerm = "AttributeTerm",
     Collection = "Collection"
 }
 
@@ -144,6 +148,37 @@ declare enum AlternateIdentifierType {
     ASIN = "asin",
     LEGACY_CODE = "legacy_code",
     CUSTOM = "custom"
+}
+
+declare enum IntegrationEventType {
+    ATTRIBUTE = "attribute",
+    ATTRIBUTE_TERM = "attribute_term",
+    BRAND = "brand",
+    CATEGORY = "category",
+    DISTRIBUTOR = "distributor",
+    FILE = "file",
+    INTEGRATION_RESOURCE_MAP = "integration_resource_map",
+    INVENTORY = "inventory",
+    INVENTORY_LOCATION = "inventory_location",
+    PRODUCT = "product",
+    SKU = "sku",
+    STORE = "store",
+    TAG = "tag",
+    VARIANT = "variant",
+    ALTERNATE_IDENTIFIER = "alternate_identifier",
+    PROPERTY = "property",
+    PROPERTY_TERM = "property_term"
+}
+
+declare enum IntegrationProtocol {
+    RABBITMQ = "rabbitmq",
+    WEBHOOK = "webhook",
+    NONE = "none"
+}
+
+declare enum IntegrationStatus {
+    ACTIVE = "active",
+    INACTIVE = "inactive"
 }
 
 /**
@@ -682,14 +717,18 @@ declare class AlternateIdentifierRequestBuilder {
 
 declare class SkuRequest extends AbstractDTO implements RequestDTO {
     private readonly code;
-    constructor(code?: string | null);
+    private readonly iri;
+    constructor(code?: string | null, iri?: string | null);
     getCode(): string | null;
+    getIri(): string | null;
     toJSON(): Record<string, any>;
     static builder(): SkuRequestBuilder;
 }
 declare class SkuRequestBuilder {
     private _code;
+    private _iri;
     code(code: string): SkuRequestBuilder;
+    iri(iri: string): SkuRequestBuilder;
     build(): SkuRequest;
 }
 
@@ -752,6 +791,217 @@ declare class FileRequestBuilder {
      * Build the FileRequest
      */
     build(): FileRequest;
+}
+
+/**
+ * DTO for integration event creation and update requests
+ */
+declare class IntegrationEventRequest extends AbstractDTO implements RequestDTO {
+    private readonly eventType;
+    private readonly onCreate;
+    private readonly onUpdate;
+    private readonly onDelete;
+    private readonly store;
+    private readonly iri;
+    /**
+     * Create a new IntegrationEventRequest
+     *
+     * @param eventType Event type
+     * @param onCreate Fire on create
+     * @param onUpdate Fire on update
+     * @param onDelete Fire on delete
+     * @param store Store IRI (optional)
+     * @param iri Integration event IRI (used for updates, not sent in requests)
+     */
+    constructor(eventType?: IntegrationEventType | null, onCreate?: boolean | null, onUpdate?: boolean | null, onDelete?: boolean | null, store?: string | null, iri?: string | null);
+    /**
+     * Get the event type
+     */
+    getEventType(): IntegrationEventType | null;
+    /**
+     * Get onCreate flag
+     */
+    getOnCreate(): boolean | null;
+    /**
+     * Get onUpdate flag
+     */
+    getOnUpdate(): boolean | null;
+    /**
+     * Get onDelete flag
+     */
+    getOnDelete(): boolean | null;
+    /**
+     * Get the store IRI
+     */
+    getStore(): string | null;
+    /**
+     * Get the event IRI
+     */
+    getIri(): string | null;
+    /**
+     * Convert to a plain object for API requests
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create a builder for IntegrationEventRequest
+     */
+    static builder(): IntegrationEventRequestBuilder;
+}
+/**
+ * Builder for IntegrationEventRequest
+ */
+declare class IntegrationEventRequestBuilder {
+    private _eventType;
+    private _onCreate;
+    private _onUpdate;
+    private _onDelete;
+    private _store;
+    private _iri;
+    /**
+     * Set the event type
+     */
+    eventType(eventType: IntegrationEventType): IntegrationEventRequestBuilder;
+    /**
+     * Set the onCreate flag
+     */
+    onCreate(onCreate: boolean): IntegrationEventRequestBuilder;
+    /**
+     * Set the onUpdate flag
+     */
+    onUpdate(onUpdate: boolean): IntegrationEventRequestBuilder;
+    /**
+     * Set the onDelete flag
+     */
+    onDelete(onDelete: boolean): IntegrationEventRequestBuilder;
+    /**
+     * Set the store IRI
+     */
+    store(store: string): IntegrationEventRequestBuilder;
+    /**
+     * Set the event IRI
+     */
+    iri(iri: string): IntegrationEventRequestBuilder;
+    /**
+     * Build the IntegrationEventRequest
+     */
+    build(): IntegrationEventRequest;
+}
+
+/**
+ * DTO for integration creation and update requests
+ */
+declare class IntegrationRequest extends AbstractDTO implements RequestDTO {
+    private readonly name;
+    private readonly protocol;
+    private readonly status;
+    private readonly events;
+    private readonly iri;
+    /**
+     * Create a new IntegrationRequest
+     *
+     * @param name Integration name
+     * @param protocol Integration protocol
+     * @param status Integration status
+     * @param events Integration events
+     * @param iri Integration IRI (used for updates, not sent in requests)
+     */
+    constructor(name?: string | null, protocol?: IntegrationProtocol | null, status?: IntegrationStatus | null, events?: IntegrationEventRequest[] | null, iri?: string | null);
+    /**
+     * Get the integration name
+     */
+    getName(): string | null;
+    /**
+     * Get the integration protocol
+     */
+    getProtocol(): IntegrationProtocol | null;
+    /**
+     * Get the integration status
+     */
+    getStatus(): IntegrationStatus | null;
+    /**
+     * Get the integration events
+     */
+    getEvents(): IntegrationEventRequest[] | null;
+    /**
+     * Get the integration IRI
+     */
+    getIri(): string | null;
+    /**
+     * Convert to a plain object for API requests
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create a builder for IntegrationRequest
+     */
+    static builder(): IntegrationRequestBuilder;
+}
+/**
+ * Builder for IntegrationRequest
+ */
+declare class IntegrationRequestBuilder {
+    private _name;
+    private _protocol;
+    private _status;
+    private _events;
+    private _iri;
+    /**
+     * Set the integration name
+     */
+    name(name: string): IntegrationRequestBuilder;
+    /**
+     * Set the integration protocol
+     */
+    protocol(protocol: IntegrationProtocol): IntegrationRequestBuilder;
+    /**
+     * Set the integration status
+     */
+    status(status: IntegrationStatus): IntegrationRequestBuilder;
+    /**
+     * Set the integration events
+     */
+    events(events: IntegrationEventRequest[]): IntegrationRequestBuilder;
+    /**
+     * Set the integration IRI
+     */
+    iri(iri: string): IntegrationRequestBuilder;
+    /**
+     * Build the IntegrationRequest
+     */
+    build(): IntegrationRequest;
+}
+
+declare class AttributeRequest extends AbstractDTO implements RequestDTO {
+    private readonly name;
+    private readonly iri;
+    constructor(name?: string | null, iri?: string | null);
+    getName(): string | null;
+    getIri(): string | null;
+    toJSON(): Record<string, any>;
+    static builder(): AttributeRequestBuilder;
+}
+declare class AttributeRequestBuilder {
+    private _name;
+    private _iri;
+    name(name: string): AttributeRequestBuilder;
+    iri(iri: string): AttributeRequestBuilder;
+    build(): AttributeRequest;
+}
+
+declare class AttributeTermRequest extends AbstractDTO implements RequestDTO {
+    private readonly name;
+    private readonly iri;
+    constructor(name?: string | null, iri?: string | null);
+    getName(): string | null;
+    getIri(): string | null;
+    toJSON(): Record<string, any>;
+    static builder(): AttributeTermRequestBuilder;
+}
+declare class AttributeTermRequestBuilder {
+    private _name;
+    private _iri;
+    name(name: string): AttributeTermRequestBuilder;
+    iri(iri: string): AttributeTermRequestBuilder;
+    build(): AttributeTermRequest;
 }
 
 /**
@@ -1053,6 +1303,167 @@ declare class FileCollectionResponse extends AbstractCollectionResponse {
      * Create from API JSON data
      */
     static fromJSON(data: any): FileCollectionResponse;
+}
+
+/**
+ * DTO for integration event responses
+ */
+declare class IntegrationEventResponse extends AbstractResponse {
+    private readonly eventType;
+    private readonly onCreate;
+    private readonly onUpdate;
+    private readonly onDelete;
+    private readonly store;
+    /**
+     * Create a new IntegrationEventResponse
+     *
+     * @param ldId Event IRI
+     * @param ldType Event type
+     * @param uuid Event UUID
+     * @param createdAt Creation timestamp
+     * @param updatedAt Last update timestamp
+     * @param eventType Event type
+     * @param onCreate Fire on create
+     * @param onUpdate Fire on update
+     * @param onDelete Fire on delete
+     * @param store Store IRI
+     */
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, eventType: IntegrationEventType, onCreate: boolean, onUpdate: boolean, onDelete: boolean, store?: string | null);
+    /**
+     * Get the event type
+     */
+    getEventType(): IntegrationEventType;
+    /**
+     * Get onCreate flag
+     */
+    getOnCreate(): boolean;
+    /**
+     * Get onUpdate flag
+     */
+    getOnUpdate(): boolean;
+    /**
+     * Get onDelete flag
+     */
+    getOnDelete(): boolean;
+    /**
+     * Get the store IRI
+     */
+    getStore(): string | null;
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): IntegrationEventResponse;
+}
+
+/**
+ * DTO for integration responses
+ */
+declare class IntegrationResponse extends AbstractResponse {
+    private readonly name;
+    private readonly protocol;
+    private readonly status;
+    private readonly events;
+    /**
+     * Create a new IntegrationResponse
+     *
+     * @param ldId Integration IRI
+     * @param ldType Integration type
+     * @param uuid Integration UUID
+     * @param createdAt Creation timestamp
+     * @param updatedAt Last update timestamp
+     * @param name Integration name
+     * @param protocol Integration protocol
+     * @param status Integration status
+     * @param events Integration events
+     */
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, name: string, protocol: IntegrationProtocol, status: IntegrationStatus, events?: IntegrationEventResponse[]);
+    /**
+     * Get the integration name
+     */
+    getName(): string;
+    /**
+     * Get the integration protocol
+     */
+    getProtocol(): IntegrationProtocol;
+    /**
+     * Get the integration status
+     */
+    getStatus(): IntegrationStatus;
+    /**
+     * Get the integration events
+     */
+    getEvents(): IntegrationEventResponse[];
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): IntegrationResponse;
+}
+
+/**
+ * DTO for integration collection responses
+ */
+declare class IntegrationCollectionResponse extends AbstractCollectionResponse {
+    /**
+     * Create a new IntegrationCollectionResponse
+     *
+     * @param ldContext JSON-LD context
+     * @param ldId Collection IRI
+     * @param ldType Collection type
+     * @param ldMembers Integrations in the collection
+     * @param ldTotalItems Total number of integrations
+     * @param ldView Pagination information
+     */
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: IntegrationResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    /**
+     * Get the integrations in the collection
+     */
+    getLdMembers(): IntegrationResponse[];
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): IntegrationCollectionResponse;
+}
+
+declare class AttributeResponse extends AbstractResponse {
+    private readonly name;
+    private readonly store;
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, name: string, store: string);
+    getName(): string;
+    getStore(): string;
+    toJSON(): Record<string, any>;
+    static fromJSON(data: any): AttributeResponse;
+}
+
+declare class AttributeCollectionResponse extends AbstractCollectionResponse {
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: AttributeResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    getLdMembers(): AttributeResponse[];
+    static fromJSON(data: any): AttributeCollectionResponse;
+}
+
+declare class AttributeTermResponse extends AbstractResponse {
+    private readonly name;
+    private readonly attribute;
+    private readonly store;
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, name: string, attribute: string, store: string);
+    getName(): string;
+    getAttribute(): string;
+    getStore(): string;
+    toJSON(): Record<string, any>;
+    static fromJSON(data: any): AttributeTermResponse;
+}
+
+declare class AttributeTermCollectionResponse extends AbstractCollectionResponse {
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: AttributeTermResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    getLdMembers(): AttributeTermResponse[];
+    static fromJSON(data: any): AttributeTermCollectionResponse;
 }
 
 /**
@@ -1389,6 +1800,104 @@ declare class FileService extends BaseService {
 }
 
 /**
+ * Service for interacting with integration endpoints
+ */
+declare class IntegrationService extends BaseService {
+    /**
+     * Create a new integration service
+     *
+     * @param apiClient API client
+     */
+    constructor(apiClient: ApiClient);
+    /**
+     * Get all integrations
+     *
+     * @param queryParams Optional query parameters for filtering, pagination, etc.
+     * @returns Collection of integrations
+     */
+    getAll(queryParams?: QueryParameters): Promise<IntegrationCollectionResponse>;
+    /**
+     * Get an integration by ID
+     *
+     * @param id Integration ID
+     * @returns Integration data
+     */
+    getById(id: string): Promise<IntegrationResponse>;
+    /**
+     * Get an integration by IRI
+     *
+     * @param iri Integration IRI
+     * @returns Integration data
+     */
+    getByIri(iri: string): Promise<IntegrationResponse>;
+    /**
+     * Create a new integration
+     *
+     * @param integrationRequest Integration data
+     * @returns The created integration
+     */
+    create(integrationRequest: IntegrationRequest): Promise<IntegrationResponse>;
+    /**
+     * Update an existing integration
+     *
+     * @param id Integration ID
+     * @param integrationRequest Updated integration data
+     * @returns The updated integration
+     */
+    update(id: string, integrationRequest: IntegrationRequest): Promise<IntegrationResponse>;
+    /**
+     * Update an integration by IRI
+     *
+     * @param iri Integration IRI
+     * @param integrationRequest Updated integration data
+     * @returns The updated integration
+     */
+    updateByIri(iri: string, integrationRequest: IntegrationRequest): Promise<IntegrationResponse>;
+    /**
+     * Delete an integration
+     *
+     * @param id Integration ID
+     */
+    delete(id: string): Promise<void>;
+    /**
+     * Delete an integration by IRI
+     *
+     * @param iri Integration IRI
+     */
+    deleteByIri(iri: string): Promise<void>;
+}
+
+declare class AttributeTermService extends BaseService {
+    private resourcePath;
+    constructor(apiClient: ApiClient, attributeIri: string);
+    getAll(queryParams?: QueryParameters): Promise<AttributeTermCollectionResponse>;
+    getById(id: string): Promise<AttributeTermResponse>;
+    getByIri(iri: string): Promise<AttributeTermResponse>;
+    create(termRequest: AttributeTermRequest): Promise<AttributeTermResponse>;
+    update(id: string, termRequest: AttributeTermRequest): Promise<AttributeTermResponse>;
+    updateByIri(iri: string, termRequest: AttributeTermRequest): Promise<AttributeTermResponse>;
+    delete(id: string): Promise<void>;
+    deleteByIri(iri: string): Promise<void>;
+}
+
+declare class AttributeService extends BaseService {
+    private storeIri;
+    private resourcePath;
+    constructor(apiClient: ApiClient, storeIri: string);
+    setStoreIri(storeIri: string): void;
+    getAll(queryParams?: QueryParameters): Promise<AttributeCollectionResponse>;
+    getById(id: string): Promise<AttributeResponse>;
+    getByIri(iri: string): Promise<AttributeResponse>;
+    create(attributeRequest: AttributeRequest): Promise<AttributeResponse>;
+    update(id: string, attributeRequest: AttributeRequest): Promise<AttributeResponse>;
+    updateByIri(iri: string, attributeRequest: AttributeRequest): Promise<AttributeResponse>;
+    delete(id: string): Promise<void>;
+    deleteByIri(iri: string): Promise<void>;
+    getAttributeTermService(attributeId: string): AttributeTermService;
+    getAttributeTermServiceByIri(attributeIri: string): AttributeTermService;
+}
+
+/**
  * Configuration options for the Apiera SDK
  */
 interface ApieraSdkConfig {
@@ -1426,6 +1935,7 @@ declare class ApieraSdk {
     readonly alternateIdentifier: AlternateIdentifierService;
     readonly sku: SkuService;
     readonly file: FileService;
+    readonly integration: IntegrationService;
     /**
      * Create a new Apiera SDK instance
      *
@@ -1439,6 +1949,20 @@ declare class ApieraSdk {
      * @returns Product service for the specified store
      */
     getProductService(storeIri: string): ProductService;
+    /**
+     * Get an attribute service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Attribute service for the specified store
+     */
+    getAttributeService(storeIri: string): AttributeService;
+    /**
+     * Get an attribute term service for a specific attribute
+     *
+     * @param attributeIri Attribute IRI (e.g., "/api/v1/stores/123/attributes/456" or "https://api.apiera.com/api/v1/stores/123/attributes/456")
+     * @returns Attribute term service for the specified attribute
+     */
+    getAttributeTermService(attributeIri: string): AttributeTermService;
     /**
      * Set an authentication token
      *
@@ -1463,4 +1987,4 @@ declare class ApieraSdk {
     getToken(): Promise<string | null>;
 }
 
-export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, BaseService, type DTO, FileCollectionResponse, FileRequest, FileRequestBuilder, FileResponse, FileService, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, SkuCollectionResponse, SkuRequest, SkuRequestBuilder, SkuResponse, SkuService, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };
+export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, AttributeCollectionResponse, AttributeRequest, AttributeRequestBuilder, AttributeResponse, AttributeService, AttributeTermCollectionResponse, AttributeTermRequest, AttributeTermRequestBuilder, AttributeTermResponse, AttributeTermService, BaseService, type DTO, FileCollectionResponse, FileRequest, FileRequestBuilder, FileResponse, FileService, IntegrationCollectionResponse, IntegrationEventRequest, IntegrationEventRequestBuilder, IntegrationEventResponse, IntegrationEventType, IntegrationProtocol, IntegrationRequest, IntegrationRequestBuilder, IntegrationResponse, IntegrationService, IntegrationStatus, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, SkuCollectionResponse, SkuRequest, SkuRequestBuilder, SkuResponse, SkuService, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };

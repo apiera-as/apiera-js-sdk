@@ -9,5 +9,7 @@ export enum LdType {
     File = 'File',
     Integration = 'Integration',
     IntegrationEvent = 'IntegrationEvent',
+    Attribute = 'Attribute',
+    AttributeTerm = 'AttributeTerm',
     Collection = 'Collection',
 }

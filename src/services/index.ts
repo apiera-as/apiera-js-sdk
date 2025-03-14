@@ -6,3 +6,5 @@ export * from './AlternateIdentifierService';
 export * from './SkuService';
 export * from './FileService';
 export * from './IntegrationService';
+export * from './AttributeService';
+export * from './AttributeTermService';

@@ -28,3 +28,7 @@ __exportStar(require("./FileCollectionResponse"), exports);
 __exportStar(require("./IntegrationResponse"), exports);
 __exportStar(require("./IntegrationEventResponse"), exports);
 __exportStar(require("./IntegrationCollectionResponse"), exports);
+__exportStar(require("./AttributeResponse"), exports);
+__exportStar(require("./AttributeCollectionResponse"), exports);
+__exportStar(require("./AttributeTermResponse"), exports);
+__exportStar(require("./AttributeTermCollectionResponse"), exports);

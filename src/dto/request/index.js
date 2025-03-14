@@ -22,3 +22,5 @@ __exportStar(require("./SkuRequest"), exports);
 __exportStar(require("./FileRequest"), exports);
 __exportStar(require("./IntegrationEventRequest"), exports);
 __exportStar(require("./IntegrationRequest"), exports);
+__exportStar(require("./AttributeRequest"), exports);
+__exportStar(require("./AttributeTermRequest"), exports);

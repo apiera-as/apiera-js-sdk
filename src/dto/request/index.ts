@@ -6,3 +6,5 @@ export * from './SkuRequest';
 export * from './FileRequest';
 export * from './IntegrationEventRequest';
 export * from './IntegrationRequest';
+export * from './AttributeRequest';
+export * from './AttributeTermRequest';

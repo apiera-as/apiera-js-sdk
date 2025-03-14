@@ -55,6 +55,24 @@ class ApieraSdk {
         return new services_1.ProductService(this.apiClient, storeIri);
     }
     /**
+     * Get an attribute service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Attribute service for the specified store
+     */
+    getAttributeService(storeIri) {
+        return new services_1.AttributeService(this.apiClient, storeIri);
+    }
+    /**
+     * Get an attribute term service for a specific attribute
+     *
+     * @param attributeIri Attribute IRI (e.g., "/api/v1/stores/123/attributes/456" or "https://api.apiera.com/api/v1/stores/123/attributes/456")
+     * @returns Attribute term service for the specified attribute
+     */
+    getAttributeTermService(attributeIri) {
+        return new services_1.AttributeTermService(this.apiClient, attributeIri);
+    }
+    /**
      * Set an authentication token
      *
      * @param token JWT token

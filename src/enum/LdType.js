@@ -13,5 +13,7 @@ var LdType;
     LdType["File"] = "File";
     LdType["Integration"] = "Integration";
     LdType["IntegrationEvent"] = "IntegrationEvent";
+    LdType["Attribute"] = "Attribute";
+    LdType["AttributeTerm"] = "AttributeTerm";
     LdType["Collection"] = "Collection";
 })(LdType || (exports.LdType = LdType = {}));

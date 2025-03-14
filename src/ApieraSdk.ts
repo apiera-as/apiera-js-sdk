@@ -6,7 +6,9 @@ import {
     AlternateIdentifierService,
     SkuService,
     FileService,
-    IntegrationService
+    IntegrationService,
+    AttributeService,
+    AttributeTermService
 } from './services';
 
 /**
@@ -99,6 +101,26 @@ export class ApieraSdk {
      */
     getProductService(storeIri: string): ProductService {
         return new ProductService(this.apiClient, storeIri);
+    }
+
+    /**
+     * Get an attribute service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Attribute service for the specified store
+     */
+    getAttributeService(storeIri: string): AttributeService {
+        return new AttributeService(this.apiClient, storeIri);
+    }
+
+    /**
+     * Get an attribute term service for a specific attribute
+     *
+     * @param attributeIri Attribute IRI (e.g., "/api/v1/stores/123/attributes/456" or "https://api.apiera.com/api/v1/stores/123/attributes/456")
+     * @returns Attribute term service for the specified attribute
+     */
+    getAttributeTermService(attributeIri: string): AttributeTermService {
+        return new AttributeTermService(this.apiClient, attributeIri);
     }
 
     /**

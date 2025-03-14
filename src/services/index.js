@@ -22,3 +22,5 @@ __exportStar(require("./AlternateIdentifierService"), exports);
 __exportStar(require("./SkuService"), exports);
 __exportStar(require("./FileService"), exports);
 __exportStar(require("./IntegrationService"), exports);
+__exportStar(require("./AttributeService"), exports);
+__exportStar(require("./AttributeTermService"), exports);

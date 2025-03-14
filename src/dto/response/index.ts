@@ -12,3 +12,7 @@ export * from './FileCollectionResponse';
 export * from './IntegrationResponse';
 export * from './IntegrationEventResponse';
 export * from './IntegrationCollectionResponse';
+export * from './AttributeResponse';
+export * from './AttributeCollectionResponse';
+export * from './AttributeTermResponse';
+export * from './AttributeTermCollectionResponse';

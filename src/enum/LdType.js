@@ -15,5 +15,6 @@ var LdType;
     LdType["IntegrationEvent"] = "IntegrationEvent";
     LdType["Attribute"] = "Attribute";
     LdType["AttributeTerm"] = "AttributeTerm";
+    LdType["Brand"] = "Brand";
     LdType["Collection"] = "Collection";
 })(LdType || (exports.LdType = LdType = {}));

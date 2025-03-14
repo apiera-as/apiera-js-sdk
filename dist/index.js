@@ -90,6 +90,11 @@ __export(index_exports, {
   AttributeTermResponse: () => AttributeTermResponse,
   AttributeTermService: () => AttributeTermService,
   BaseService: () => BaseService,
+  BrandCollectionResponse: () => BrandCollectionResponse,
+  BrandRequest: () => BrandRequest,
+  BrandRequestBuilder: () => BrandRequestBuilder,
+  BrandResponse: () => BrandResponse,
+  BrandService: () => BrandService,
   FileCollectionResponse: () => FileCollectionResponse,
   FileRequest: () => FileRequest,
   FileRequestBuilder: () => FileRequestBuilder,
@@ -1570,6 +1575,118 @@ var AttributeTermRequestBuilder = class {
   }
 };
 
+// src/dto/request/BrandRequest.ts
+var BrandRequest = class extends AbstractDTO {
+  /**
+   * Create a new BrandRequest
+   *
+   * @param name Brand name
+   * @param description Brand description
+   * @param image Brand image URL
+   * @param iri Brand IRI (used for updates, not sent in requests)
+   */
+  constructor(name = null, description = null, image = null, iri = null) {
+    super();
+    this.name = name;
+    this.description = description;
+    this.image = image;
+    this.iri = iri;
+  }
+  /**
+   * Get the brand name
+   */
+  getName() {
+    return this.name;
+  }
+  /**
+   * Get the brand description
+   */
+  getDescription() {
+    return this.description;
+  }
+  /**
+   * Get the brand image URL
+   */
+  getImage() {
+    return this.image;
+  }
+  /**
+   * Get the brand IRI
+   */
+  getIri() {
+    return this.iri;
+  }
+  /**
+   * Convert to a plain object for API requests
+   */
+  toJSON() {
+    const data = {};
+    if (this.name !== null) {
+      data.name = this.name;
+    }
+    if (this.description !== null) {
+      data.description = this.description;
+    }
+    if (this.image !== null) {
+      data.image = this.image;
+    }
+    return data;
+  }
+  /**
+   * Create a builder for BrandRequest
+   */
+  static builder() {
+    return new BrandRequestBuilder();
+  }
+};
+var BrandRequestBuilder = class {
+  constructor() {
+    this._name = null;
+    this._description = null;
+    this._image = null;
+    this._iri = null;
+  }
+  /**
+   * Set the brand name
+   */
+  name(name) {
+    this._name = name;
+    return this;
+  }
+  /**
+   * Set the brand description
+   */
+  description(description) {
+    this._description = description;
+    return this;
+  }
+  /**
+   * Set the brand image URL
+   */
+  image(image) {
+    this._image = image;
+    return this;
+  }
+  /**
+   * Set the brand IRI
+   */
+  iri(iri) {
+    this._iri = iri;
+    return this;
+  }
+  /**
+   * Build the BrandRequest
+   */
+  build() {
+    return new BrandRequest(
+      this._name,
+      this._description,
+      this._image,
+      this._iri
+    );
+  }
+};
+
 // src/enum/LdType.ts
 var LdType = /* @__PURE__ */ ((LdType2) => {
   LdType2["Store"] = "Store";
@@ -1581,6 +1698,7 @@ var LdType = /* @__PURE__ */ ((LdType2) => {
   LdType2["IntegrationEvent"] = "IntegrationEvent";
   LdType2["Attribute"] = "Attribute";
   LdType2["AttributeTerm"] = "AttributeTerm";
+  LdType2["Brand"] = "Brand";
   LdType2["Collection"] = "Collection";
   return LdType2;
 })(LdType || {});
@@ -2522,6 +2640,119 @@ var AttributeTermCollectionResponse = class _AttributeTermCollectionResponse ext
   }
 };
 
+// src/dto/response/BrandResponse.ts
+var BrandResponse = class _BrandResponse extends AbstractResponse {
+  /**
+   * Create a new BrandResponse
+   *
+   * @param ldId Brand IRI
+   * @param ldType Brand type
+   * @param uuid Brand UUID
+   * @param createdAt Creation timestamp
+   * @param updatedAt Last update timestamp
+   * @param name Brand name
+   * @param description Brand description
+   * @param store Store IRI
+   * @param image Brand image URL
+   */
+  constructor(ldId, ldType, uuid, createdAt, updatedAt, name, description = null, store = null, image = null) {
+    super(ldId, ldType, uuid, createdAt, updatedAt);
+    this.name = name;
+    this.description = description;
+    this.store = store;
+    this.image = image;
+  }
+  /**
+   * Get the brand name
+   */
+  getName() {
+    return this.name;
+  }
+  /**
+   * Get the brand description
+   */
+  getDescription() {
+    return this.description;
+  }
+  /**
+   * Get the store IRI
+   */
+  getStore() {
+    return this.store;
+  }
+  /**
+   * Get the brand image URL
+   */
+  getImage() {
+    return this.image;
+  }
+  /**
+   * Convert to a plain object
+   */
+  toJSON() {
+    return __spreadProps(__spreadValues({}, super.toJSON()), {
+      name: this.name,
+      description: this.description,
+      store: this.store,
+      image: this.image
+    });
+  }
+  /**
+   * Create from API JSON data
+   */
+  static fromJSON(data) {
+    return new _BrandResponse(
+      data["@id"] || "",
+      data["@type"] || "Brand" /* Brand */,
+      data.uuid || "",
+      new Date(data.createdAt),
+      new Date(data.updatedAt),
+      data.name || "",
+      data.description || null,
+      data.store || null,
+      data.image || null
+    );
+  }
+};
+
+// src/dto/response/BrandCollectionResponse.ts
+var BrandCollectionResponse = class _BrandCollectionResponse extends AbstractCollectionResponse {
+  /**
+   * Create a new BrandCollectionResponse
+   *
+   * @param ldContext JSON-LD context
+   * @param ldId Collection IRI
+   * @param ldType Collection type
+   * @param ldMembers Brands in the collection
+   * @param ldTotalItems Total number of brands
+   * @param ldView Pagination information
+   */
+  constructor(ldContext, ldId, ldType, ldMembers = [], ldTotalItems = 0, ldView = null) {
+    super(ldContext, ldId, ldType, ldMembers, ldTotalItems, ldView);
+  }
+  /**
+   * Get the brands in the collection
+   */
+  getLdMembers() {
+    return super.getLdMembers();
+  }
+  /**
+   * Create from API JSON data
+   */
+  static fromJSON(data) {
+    const members = (data.member || []).map((item) => BrandResponse.fromJSON(item));
+    const view = data.view ? PartialCollectionView.fromJSON(data.view) : null;
+    return new _BrandCollectionResponse(
+      data["@context"] || "",
+      data["@id"] || "",
+      data["@type"] || "Collection" /* Collection */,
+      members,
+      data.totalItems || 0,
+      view
+    );
+  }
+};
+
 // src/services/StoreService.ts
 var StoreService = class extends BaseService {
   /**
@@ -3279,6 +3510,127 @@ var AttributeService = class extends BaseService {
   }
 };
 
+// src/services/BrandService.ts
+var BrandService = class extends BaseService {
+  /**
+   * Create a new brand service
+   *
+   * @param apiClient API client
+   * @param storeIri Store IRI for brand association
+   */
+  constructor(apiClient, storeIri) {
+    super(apiClient, "");
+    this.storeIri = storeIri;
+    const storeId = this.extractIdFromIri(storeIri);
+    this.resourcePath = `/api/v1/stores/${storeId}/brands`;
+  }
+  /**
+   * Set the store IRI for brand association
+   *
+   * @param storeIri The full IRI of the store
+   */
+  setStoreIri(storeIri) {
+    this.storeIri = storeIri;
+    const storeId = this.extractIdFromIri(storeIri);
+    this.resourcePath = `/api/v1/stores/${storeId}/brands`;
+  }
+  /**
+   * Get all brands for the store
+   *
+   * @param queryParams Optional query parameters for filtering, pagination, etc.
+   * @returns Collection of brands
+   */
+  getAll(queryParams) {
+    return __async(this, null, function* () {
+      const params = (queryParams == null ? void 0 : queryParams.toJSON()) || {};
+      const response = yield this.apiClient.get(this.resourcePath, params);
+      return BrandCollectionResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Get a brand by ID
+   *
+   * @param id Brand ID
+   * @returns Brand data
+   */
+  getById(id) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(`${this.resourcePath}/${id}`);
+      return BrandResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Get a brand by IRI
+   *
+   * @param iri Brand IRI
+   * @returns Brand data
+   */
+  getByIri(iri) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.get(iri);
+      return BrandResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Create a new brand
+   *
+   * @param brandRequest Brand data
+   * @returns The created brand
+   */
+  create(brandRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.post(this.resourcePath, brandRequest.toJSON());
+      return BrandResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Update an existing brand
+   *
+   * @param id Brand ID
+   * @param brandRequest Updated brand data
+   * @returns The updated brand
+   */
+  update(id, brandRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(`${this.resourcePath}/${id}`, brandRequest.toJSON());
+      return BrandResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Update a brand by IRI
+   *
+   * @param iri Brand IRI
+   * @param brandRequest Updated brand data
+   * @returns The updated brand
+   */
+  updateByIri(iri, brandRequest) {
+    return __async(this, null, function* () {
+      const response = yield this.apiClient.put(iri, brandRequest.toJSON());
+      return BrandResponse.fromJSON(response);
+    });
+  }
+  /**
+   * Delete a brand
+   *
+   * @param id Brand ID
+   */
+  delete(id) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(`${this.resourcePath}/${id}`);
+    });
+  }
+  /**
+   * Delete a brand by IRI
+   *
+   * @param iri Brand IRI
+   */
+  deleteByIri(iri) {
+    return __async(this, null, function* () {
+      yield this.apiClient.delete(iri);
+    });
+  }
+};
+
 // src/ApieraSdk.ts
 var ApieraSdk = class {
   /**
@@ -3334,6 +3686,15 @@ var ApieraSdk = class {
    */
   getAttributeTermService(attributeIri) {
     return new AttributeTermService(this.apiClient, attributeIri);
+  }
+  /**
+   * Get a brand service for a specific store
+   *
+   * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+   * @returns Brand service for the specified store
+   */
+  getBrandService(storeIri) {
+    return new BrandService(this.apiClient, storeIri);
   }
   /**
    * Set an authentication token
@@ -3393,6 +3754,11 @@ var ApieraSdk = class {
   AttributeTermResponse,
   AttributeTermService,
   BaseService,
+  BrandCollectionResponse,
+  BrandRequest,
+  BrandRequestBuilder,
+  BrandResponse,
+  BrandService,
   FileCollectionResponse,
   FileRequest,
   FileRequestBuilder,

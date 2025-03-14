@@ -32,3 +32,5 @@ __exportStar(require("./AttributeResponse"), exports);
 __exportStar(require("./AttributeCollectionResponse"), exports);
 __exportStar(require("./AttributeTermResponse"), exports);
 __exportStar(require("./AttributeTermCollectionResponse"), exports);
+__exportStar(require("./BrandResponse"), exports);
+__exportStar(require("./BrandCollectionResponse"), exports);

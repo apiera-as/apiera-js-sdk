@@ -16,3 +16,5 @@ export * from './AttributeResponse';
 export * from './AttributeCollectionResponse';
 export * from './AttributeTermResponse';
 export * from './AttributeTermCollectionResponse';
+export * from './BrandResponse';
+export * from './BrandCollectionResponse';

@@ -73,6 +73,15 @@ class ApieraSdk {
         return new services_1.AttributeTermService(this.apiClient, attributeIri);
     }
     /**
+     * Get a brand service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Brand service for the specified store
+     */
+    getBrandService(storeIri) {
+        return new services_1.BrandService(this.apiClient, storeIri);
+    }
+    /**
      * Set an authentication token
      *
      * @param token JWT token

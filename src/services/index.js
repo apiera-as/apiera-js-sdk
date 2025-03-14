@@ -24,3 +24,4 @@ __exportStar(require("./FileService"), exports);
 __exportStar(require("./IntegrationService"), exports);
 __exportStar(require("./AttributeService"), exports);
 __exportStar(require("./AttributeTermService"), exports);
+__exportStar(require("./BrandService"), exports);

@@ -8,7 +8,8 @@ import {
     FileService,
     IntegrationService,
     AttributeService,
-    AttributeTermService
+    AttributeTermService,
+    BrandService
 } from './services';
 
 /**
@@ -121,6 +122,16 @@ export class ApieraSdk {
      */
     getAttributeTermService(attributeIri: string): AttributeTermService {
         return new AttributeTermService(this.apiClient, attributeIri);
+    }
+
+    /**
+     * Get a brand service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Brand service for the specified store
+     */
+    getBrandService(storeIri: string): BrandService {
+        return new BrandService(this.apiClient, storeIri);
     }
 
     /**

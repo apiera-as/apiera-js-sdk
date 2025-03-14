@@ -8,3 +8,4 @@ export * from './IntegrationEventRequest';
 export * from './IntegrationRequest';
 export * from './AttributeRequest';
 export * from './AttributeTermRequest';
+export * from './BrandRequest';

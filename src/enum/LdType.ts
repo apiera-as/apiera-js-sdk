@@ -11,5 +11,6 @@ export enum LdType {
     IntegrationEvent = 'IntegrationEvent',
     Attribute = 'Attribute',
     AttributeTerm = 'AttributeTerm',
+    Brand = 'Brand',
     Collection = 'Collection',
 }

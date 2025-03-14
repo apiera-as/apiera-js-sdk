@@ -24,3 +24,4 @@ __exportStar(require("./IntegrationEventRequest"), exports);
 __exportStar(require("./IntegrationRequest"), exports);
 __exportStar(require("./AttributeRequest"), exports);
 __exportStar(require("./AttributeTermRequest"), exports);
+__exportStar(require("./BrandRequest"), exports);

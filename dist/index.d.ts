@@ -132,6 +132,7 @@ declare enum LdType {
     IntegrationEvent = "IntegrationEvent",
     Attribute = "Attribute",
     AttributeTerm = "AttributeTerm",
+    Brand = "Brand",
     Collection = "Collection"
 }
 
@@ -1005,6 +1006,78 @@ declare class AttributeTermRequestBuilder {
 }
 
 /**
+ * DTO for brand creation and update requests
+ */
+declare class BrandRequest extends AbstractDTO implements RequestDTO {
+    private readonly name;
+    private readonly description;
+    private readonly image;
+    private readonly iri;
+    /**
+     * Create a new BrandRequest
+     *
+     * @param name Brand name
+     * @param description Brand description
+     * @param image Brand image URL
+     * @param iri Brand IRI (used for updates, not sent in requests)
+     */
+    constructor(name?: string | null, description?: string | null, image?: string | null, iri?: string | null);
+    /**
+     * Get the brand name
+     */
+    getName(): string | null;
+    /**
+     * Get the brand description
+     */
+    getDescription(): string | null;
+    /**
+     * Get the brand image URL
+     */
+    getImage(): string | null;
+    /**
+     * Get the brand IRI
+     */
+    getIri(): string | null;
+    /**
+     * Convert to a plain object for API requests
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create a builder for BrandRequest
+     */
+    static builder(): BrandRequestBuilder;
+}
+/**
+ * Builder for BrandRequest
+ */
+declare class BrandRequestBuilder {
+    private _name;
+    private _description;
+    private _image;
+    private _iri;
+    /**
+     * Set the brand name
+     */
+    name(name: string): BrandRequestBuilder;
+    /**
+     * Set the brand description
+     */
+    description(description: string): BrandRequestBuilder;
+    /**
+     * Set the brand image URL
+     */
+    image(image: string): BrandRequestBuilder;
+    /**
+     * Set the brand IRI
+     */
+    iri(iri: string): BrandRequestBuilder;
+    /**
+     * Build the BrandRequest
+     */
+    build(): BrandRequest;
+}
+
+/**
  * DTO for store responses
  */
 declare class StoreResponse extends AbstractResponse {
@@ -1467,6 +1540,79 @@ declare class AttributeTermCollectionResponse extends AbstractCollectionResponse
 }
 
 /**
+ * DTO for brand responses
+ */
+declare class BrandResponse extends AbstractResponse {
+    private readonly name;
+    private readonly description;
+    private readonly store;
+    private readonly image;
+    /**
+     * Create a new BrandResponse
+     *
+     * @param ldId Brand IRI
+     * @param ldType Brand type
+     * @param uuid Brand UUID
+     * @param createdAt Creation timestamp
+     * @param updatedAt Last update timestamp
+     * @param name Brand name
+     * @param description Brand description
+     * @param store Store IRI
+     * @param image Brand image URL
+     */
+    constructor(ldId: string, ldType: LdType, uuid: string, createdAt: Date, updatedAt: Date, name: string, description?: string | null, store?: string | null, image?: string | null);
+    /**
+     * Get the brand name
+     */
+    getName(): string;
+    /**
+     * Get the brand description
+     */
+    getDescription(): string | null;
+    /**
+     * Get the store IRI
+     */
+    getStore(): string | null;
+    /**
+     * Get the brand image URL
+     */
+    getImage(): string | null;
+    /**
+     * Convert to a plain object
+     */
+    toJSON(): Record<string, any>;
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): BrandResponse;
+}
+
+/**
+ * DTO for brand collection responses
+ */
+declare class BrandCollectionResponse extends AbstractCollectionResponse {
+    /**
+     * Create a new BrandCollectionResponse
+     *
+     * @param ldContext JSON-LD context
+     * @param ldId Collection IRI
+     * @param ldType Collection type
+     * @param ldMembers Brands in the collection
+     * @param ldTotalItems Total number of brands
+     * @param ldView Pagination information
+     */
+    constructor(ldContext: string, ldId: string, ldType: LdType, ldMembers?: BrandResponse[], ldTotalItems?: number, ldView?: PartialCollectionView | null);
+    /**
+     * Get the brands in the collection
+     */
+    getLdMembers(): BrandResponse[];
+    /**
+     * Create from API JSON data
+     */
+    static fromJSON(data: any): BrandCollectionResponse;
+}
+
+/**
  * Service for interacting with store endpoints
  */
 declare class StoreService extends BaseService {
@@ -1898,6 +2044,83 @@ declare class AttributeService extends BaseService {
 }
 
 /**
+ * Service for interacting with brand endpoints
+ */
+declare class BrandService extends BaseService {
+    private storeIri;
+    private resourcePath;
+    /**
+     * Create a new brand service
+     *
+     * @param apiClient API client
+     * @param storeIri Store IRI for brand association
+     */
+    constructor(apiClient: ApiClient, storeIri: string);
+    /**
+     * Set the store IRI for brand association
+     *
+     * @param storeIri The full IRI of the store
+     */
+    setStoreIri(storeIri: string): void;
+    /**
+     * Get all brands for the store
+     *
+     * @param queryParams Optional query parameters for filtering, pagination, etc.
+     * @returns Collection of brands
+     */
+    getAll(queryParams?: QueryParameters): Promise<BrandCollectionResponse>;
+    /**
+     * Get a brand by ID
+     *
+     * @param id Brand ID
+     * @returns Brand data
+     */
+    getById(id: string): Promise<BrandResponse>;
+    /**
+     * Get a brand by IRI
+     *
+     * @param iri Brand IRI
+     * @returns Brand data
+     */
+    getByIri(iri: string): Promise<BrandResponse>;
+    /**
+     * Create a new brand
+     *
+     * @param brandRequest Brand data
+     * @returns The created brand
+     */
+    create(brandRequest: BrandRequest): Promise<BrandResponse>;
+    /**
+     * Update an existing brand
+     *
+     * @param id Brand ID
+     * @param brandRequest Updated brand data
+     * @returns The updated brand
+     */
+    update(id: string, brandRequest: BrandRequest): Promise<BrandResponse>;
+    /**
+     * Update a brand by IRI
+     *
+     * @param iri Brand IRI
+     * @param brandRequest Updated brand data
+     * @returns The updated brand
+     */
+    updateByIri(iri: string, brandRequest: BrandRequest): Promise<BrandResponse>;
+    /**
+     * Delete a brand
+     *
+     * @param id Brand ID
+     */
+    delete(id: string): Promise<void>;
+    /**
+     * Delete a brand by IRI
+     *
+     * @param iri Brand IRI
+     */
+    deleteByIri(iri: string): Promise<void>;
+}
+
+/**
  * Configuration options for the Apiera SDK
  */
 interface ApieraSdkConfig {
@@ -1964,6 +2187,13 @@ declare class ApieraSdk {
      */
     getAttributeTermService(attributeIri: string): AttributeTermService;
     /**
+     * Get a brand service for a specific store
+     *
+     * @param storeIri Store IRI (e.g., "/api/v1/stores/123" or "https://api.apiera.com/api/v1/stores/123")
+     * @returns Brand service for the specified store
+     */
+    getBrandService(storeIri: string): BrandService;
+    /**
      * Set an authentication token
      *
      * @param token JWT token
@@ -1987,4 +2217,4 @@ declare class ApieraSdk {
     getToken(): Promise<string | null>;
 }
 
-export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, AttributeCollectionResponse, AttributeRequest, AttributeRequestBuilder, AttributeResponse, AttributeService, AttributeTermCollectionResponse, AttributeTermRequest, AttributeTermRequestBuilder, AttributeTermResponse, AttributeTermService, BaseService, type DTO, FileCollectionResponse, FileRequest, FileRequestBuilder, FileResponse, FileService, IntegrationCollectionResponse, IntegrationEventRequest, IntegrationEventRequestBuilder, IntegrationEventResponse, IntegrationEventType, IntegrationProtocol, IntegrationRequest, IntegrationRequestBuilder, IntegrationResponse, IntegrationService, IntegrationStatus, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, SkuCollectionResponse, SkuRequest, SkuRequestBuilder, SkuResponse, SkuService, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };
+export { AbstractCollectionResponse, AbstractDTO, AbstractResponse, AlternateIdentifierCollectionResponse, AlternateIdentifierRequest, AlternateIdentifierRequestBuilder, AlternateIdentifierResponse, AlternateIdentifierService, AlternateIdentifierType, ApiClient, type ApiClientConfig, ApiError, ApieraSdk, type ApieraSdkConfig, AttributeCollectionResponse, AttributeRequest, AttributeRequestBuilder, AttributeResponse, AttributeService, AttributeTermCollectionResponse, AttributeTermRequest, AttributeTermRequestBuilder, AttributeTermResponse, AttributeTermService, BaseService, BrandCollectionResponse, BrandRequest, BrandRequestBuilder, BrandResponse, BrandService, type DTO, FileCollectionResponse, FileRequest, FileRequestBuilder, FileResponse, FileService, IntegrationCollectionResponse, IntegrationEventRequest, IntegrationEventRequestBuilder, IntegrationEventResponse, IntegrationEventType, IntegrationProtocol, IntegrationRequest, IntegrationRequestBuilder, IntegrationResponse, IntegrationService, IntegrationStatus, type JsonLDCollectionResource, type JsonLDResource, LdType, PartialCollectionView, type PartialCollectionViewData, ProductCollectionResponse, ProductRequest, ProductRequestBuilder, ProductResponse, ProductService, QueryParameters, QueryParametersBuilder, type RequestDTO, type ResponseDTO, SkuCollectionResponse, SkuRequest, SkuRequestBuilder, SkuResponse, SkuService, StoreCollectionResponse, StoreRequest, StoreRequestBuilder, StoreResponse, StoreService, type TokenProvider, TokenStore };

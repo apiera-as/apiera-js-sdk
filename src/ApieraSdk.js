@@ -42,6 +42,8 @@ class ApieraSdk {
         this.store = new services_1.StoreService(this.apiClient);
         this.alternateIdentifier = new services_1.AlternateIdentifierService(this.apiClient);
         this.sku = new services_1.SkuService(this.apiClient);
+        this.file = new services_1.FileService(this.apiClient);
+        this.integration = new services_1.IntegrationService(this.apiClient);
     }
     /**
      * Get a product service for a specific store

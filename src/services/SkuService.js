@@ -57,8 +57,8 @@ class SkuService extends BaseService_1.BaseService {
      */
     getByIri(iri) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = this.extractIdFromIri(iri);
-            return this.getById(id);
+            const response = yield this.apiClient.get(iri);
+            return dto_1.SkuResponse.fromJSON(response);
         });
     }
     /**
@@ -95,8 +95,8 @@ class SkuService extends BaseService_1.BaseService {
      */
     updateByIri(iri, skuRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = this.extractIdFromIri(iri);
-            return this.update(id, skuRequest);
+            const response = yield this.apiClient.put(iri, skuRequest.toJSON());
+            return dto_1.SkuResponse.fromJSON(response);
         });
     }
     /**
@@ -116,8 +116,7 @@ class SkuService extends BaseService_1.BaseService {
      */
     deleteByIri(iri) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = this.extractIdFromIri(iri);
-            yield this.delete(id);
+            yield this.apiClient.delete(iri);
         });
     }
 }

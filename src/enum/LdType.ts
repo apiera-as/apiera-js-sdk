@@ -7,6 +7,7 @@ export enum LdType {
     AlternateIdentifier = 'AlternateIdentifier',
     Sku = 'Sku',
     File = 'File',
+    Integration = 'Integration',
+    IntegrationEvent = 'IntegrationEvent',
     Collection = 'Collection',
-    // Add other types as needed
 }

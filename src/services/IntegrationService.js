@@ -9,101 +9,100 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AlternateIdentifierService = void 0;
+exports.IntegrationService = void 0;
 const dto_1 = require("../dto");
-const dto_2 = require("../dto");
 const BaseService_1 = require("./BaseService");
 /**
- * Service for interacting with alternate identifier endpoints
+ * Service for interacting with integration endpoints
  */
-class AlternateIdentifierService extends BaseService_1.BaseService {
+class IntegrationService extends BaseService_1.BaseService {
     /**
-     * Create a new alternate identifier service
+     * Create a new integration service
      *
      * @param apiClient API client
      */
     constructor(apiClient) {
-        super(apiClient, '/api/v1/alternate_identifiers');
+        super(apiClient, '/api/v1/integrations');
     }
     /**
-     * Get all alternate identifiers
+     * Get all integrations
      *
      * @param queryParams Optional query parameters for filtering, pagination, etc.
-     * @returns Collection of alternate identifiers
+     * @returns Collection of integrations
      */
     getAll(queryParams) {
         return __awaiter(this, void 0, void 0, function* () {
             const params = (queryParams === null || queryParams === void 0 ? void 0 : queryParams.toJSON()) || {};
             const response = yield this.apiClient.get(this.basePath, params);
-            return dto_1.AlternateIdentifierCollectionResponse.fromJSON(response);
+            return dto_1.IntegrationCollectionResponse.fromJSON(response);
         });
     }
     /**
-     * Get an alternate identifier by ID
+     * Get an integration by ID
      *
-     * @param id Alternate identifier ID
-     * @returns Alternate identifier data
+     * @param id Integration ID
+     * @returns Integration data
      */
     getById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.apiClient.get(`${this.basePath}/${id}`);
-            return dto_2.AlternateIdentifierResponse.fromJSON(response);
+            return dto_1.IntegrationResponse.fromJSON(response);
         });
     }
     /**
-     * Get an alternate identifier by IRI
+     * Get an integration by IRI
      *
-     * @param iri Alternate identifier IRI
-     * @returns Alternate identifier data
+     * @param iri Integration IRI
+     * @returns Integration data
      */
     getByIri(iri) {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.apiClient.get(iri);
-            return dto_2.AlternateIdentifierResponse.fromJSON(response);
+            return dto_1.IntegrationResponse.fromJSON(response);
         });
     }
     /**
-     * Create a new alternate identifier
+     * Create a new integration
      *
-     * @param request Alternate identifier data
-     * @returns The created alternate identifier
+     * @param integrationRequest Integration data
+     * @returns The created integration
      */
-    create(request) {
+    create(integrationRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.apiClient.post(this.basePath, request.toJSON());
-            return dto_2.AlternateIdentifierResponse.fromJSON(response);
+            const response = yield this.apiClient.post(this.basePath, integrationRequest.toJSON());
+            return dto_1.IntegrationResponse.fromJSON(response);
         });
     }
     /**
-     * Update an existing alternate identifier
+     * Update an existing integration
      *
-     * @param id Alternate identifier ID
-     * @param request Updated alternate identifier data
-     * @returns The updated alternate identifier
+     * @param id Integration ID
+     * @param integrationRequest Updated integration data
+     * @returns The updated integration
      */
-    update(id, request) {
+    update(id, integrationRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.apiClient.put(`${this.basePath}/${id}`, request.toJSON());
-            return dto_2.AlternateIdentifierResponse.fromJSON(response);
+            const response = yield this.apiClient.put(`${this.basePath}/${id}`, integrationRequest.toJSON());
+            return dto_1.IntegrationResponse.fromJSON(response);
         });
     }
     /**
-     * Update an alternate identifier by IRI
+     * Update an integration by IRI
      *
-     * @param iri Alternate identifier IRI
-     * @param request Updated alternate identifier data
-     * @returns The updated alternate identifier
+     * @param iri Integration IRI
+     * @param integrationRequest Updated integration data
+     * @returns The updated integration
      */
-    updateByIri(iri, request) {
+    updateByIri(iri, integrationRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.apiClient.put(iri, request.toJSON());
-            return dto_2.AlternateIdentifierResponse.fromJSON(response);
+            const response = yield this.apiClient.put(iri, integrationRequest.toJSON());
+            return dto_1.IntegrationResponse.fromJSON(response);
         });
     }
     /**
-     * Delete an alternate identifier
+     * Delete an integration
      *
-     * @param id Alternate identifier ID
+     * @param id Integration ID
      */
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -111,9 +110,9 @@ class AlternateIdentifierService extends BaseService_1.BaseService {
         });
     }
     /**
-     * Delete an alternate identifier by IRI
+     * Delete an integration by IRI
      *
-     * @param iri Alternate identifier IRI
+     * @param iri Integration IRI
      */
     deleteByIri(iri) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -121,4 +120,4 @@ class AlternateIdentifierService extends BaseService_1.BaseService {
         });
     }
 }
-exports.AlternateIdentifierService = AlternateIdentifierService;
+exports.IntegrationService = IntegrationService;

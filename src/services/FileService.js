@@ -9,101 +9,74 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StoreService = void 0;
+exports.FileService = void 0;
 const dto_1 = require("../dto");
-const dto_2 = require("../dto");
 const BaseService_1 = require("./BaseService");
 /**
- * Service for interacting with store endpoints
+ * Service for interacting with file endpoints
  */
-class StoreService extends BaseService_1.BaseService {
+class FileService extends BaseService_1.BaseService {
     /**
-     * Create a new store service
+     * Create a new file service
      *
      * @param apiClient API client
      */
     constructor(apiClient) {
-        super(apiClient, '/api/v1/stores');
+        super(apiClient, '/api/v1/files');
     }
     /**
-     * Get all stores
+     * Get all files
      *
      * @param queryParams Optional query parameters for filtering, pagination, etc.
-     * @returns Collection of stores
+     * @returns Collection of files
      */
     getAll(queryParams) {
         return __awaiter(this, void 0, void 0, function* () {
             const params = (queryParams === null || queryParams === void 0 ? void 0 : queryParams.toJSON()) || {};
             const response = yield this.apiClient.get(this.basePath, params);
-            return dto_1.StoreCollectionResponse.fromJSON(response);
+            return dto_1.FileCollectionResponse.fromJSON(response);
         });
     }
     /**
-     * Get a store by ID
+     * Get a file by ID
      *
-     * @param id Store ID
-     * @returns Store data
+     * @param id File ID
+     * @returns File data
      */
     getById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.apiClient.get(`${this.basePath}/${id}`);
-            return dto_2.StoreResponse.fromJSON(response);
+            return dto_1.FileResponse.fromJSON(response);
         });
     }
     /**
-     * Get a store by IRI
+     * Get a file by IRI
      *
-     * @param iri Store IRI
-     * @returns Store data
+     * @param iri File IRI
+     * @returns File data
      */
     getByIri(iri) {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.apiClient.get(iri);
-            return dto_2.StoreResponse.fromJSON(response);
+            return dto_1.FileResponse.fromJSON(response);
         });
     }
     /**
-     * Create a new store
+     * Create a new file
      *
-     * @param storeRequest Store data
-     * @returns The created store
+     * @param fileRequest File data
+     * @returns The created file
      */
-    create(storeRequest) {
+    create(fileRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.apiClient.post(this.basePath, storeRequest.toJSON());
-            return dto_2.StoreResponse.fromJSON(response);
+            const response = yield this.apiClient.post(this.basePath, fileRequest.toJSON());
+            return dto_1.FileResponse.fromJSON(response);
         });
     }
     /**
-     * Update an existing store
+     * Delete a file
      *
-     * @param id Store ID
-     * @param storeRequest Updated store data
-     * @returns The updated store
-     */
-    update(id, storeRequest) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.apiClient.put(`${this.basePath}/${id}`, storeRequest.toJSON());
-            return dto_2.StoreResponse.fromJSON(response);
-        });
-    }
-    /**
-     * Update a store by IRI
-     *
-     * @param iri Store IRI
-     * @param storeRequest Updated store data
-     * @returns The updated store
-     */
-    updateByIri(iri, storeRequest) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.apiClient.put(iri, storeRequest.toJSON());
-            return dto_2.StoreResponse.fromJSON(response);
-        });
-    }
-    /**
-     * Delete a store
-     *
-     * @param id Store ID
+     * @param id File ID
      */
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -111,9 +84,9 @@ class StoreService extends BaseService_1.BaseService {
         });
     }
     /**
-     * Delete a store by IRI
+     * Delete a file by IRI
      *
-     * @param iri Store IRI
+     * @param iri File IRI
      */
     deleteByIri(iri) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -121,4 +94,4 @@ class StoreService extends BaseService_1.BaseService {
         });
     }
 }
-exports.StoreService = StoreService;
+exports.FileService = FileService;

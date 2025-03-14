@@ -9,3 +9,6 @@ export * from './SkuResponse';
 export * from './SkuCollectionResponse';
 export * from './FileResponse';
 export * from './FileCollectionResponse';
+export * from './IntegrationResponse';
+export * from './IntegrationEventResponse';
+export * from './IntegrationCollectionResponse';

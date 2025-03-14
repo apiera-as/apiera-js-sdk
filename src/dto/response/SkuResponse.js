@@ -27,7 +27,7 @@ class SkuResponse extends base_1.AbstractResponse {
         return Object.assign(Object.assign({}, super.toJSON()), { code: this.code, products: this.products, variants: this.variants, inventories: this.inventories });
     }
     static fromJSON(data) {
-        return new SkuResponse(data['@id'] || '', data['@type'] || enum_1.LdType.AlternateIdentifier, data.uuid || '', new Date(data.createdAt), new Date(data.updatedAt), data.code || '', data.products || [], data.variants || [], data.inventories || []);
+        return new SkuResponse(data['@id'] || '', data['@type'] || enum_1.LdType.Sku, data.uuid || '', new Date(data.createdAt), new Date(data.updatedAt), data.code || '', data.products || [], data.variants || [], data.inventories || []);
     }
 }
 exports.SkuResponse = SkuResponse;

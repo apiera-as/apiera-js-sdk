@@ -16,3 +16,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./LdType"), exports);
 __exportStar(require("./AlternateIdentifierType"), exports);
+__exportStar(require("./IntegrationEventType"), exports);
+__exportStar(require("./IntegrationProtocol"), exports);
+__exportStar(require("./IntegrationStatus"), exports);

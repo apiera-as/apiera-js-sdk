@@ -9,6 +9,9 @@ var LdType;
     LdType["Store"] = "Store";
     LdType["Product"] = "Product";
     LdType["AlternateIdentifier"] = "AlternateIdentifier";
+    LdType["Sku"] = "Sku";
+    LdType["File"] = "File";
+    LdType["Integration"] = "Integration";
+    LdType["IntegrationEvent"] = "IntegrationEvent";
     LdType["Collection"] = "Collection";
-    // Add other types as needed
 })(LdType || (exports.LdType = LdType = {}));

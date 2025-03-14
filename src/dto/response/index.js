@@ -23,3 +23,8 @@ __exportStar(require("./AlternateIdentifierResponse"), exports);
 __exportStar(require("./AlternateIdentifierCollectionResponse"), exports);
 __exportStar(require("./SkuResponse"), exports);
 __exportStar(require("./SkuCollectionResponse"), exports);
+__exportStar(require("./FileResponse"), exports);
+__exportStar(require("./FileCollectionResponse"), exports);
+__exportStar(require("./IntegrationResponse"), exports);
+__exportStar(require("./IntegrationEventResponse"), exports);
+__exportStar(require("./IntegrationCollectionResponse"), exports);

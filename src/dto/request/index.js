@@ -19,3 +19,6 @@ __exportStar(require("./StoreRequest"), exports);
 __exportStar(require("./ProductRequest"), exports);
 __exportStar(require("./AlternateIdentifierRequest"), exports);
 __exportStar(require("./SkuRequest"), exports);
+__exportStar(require("./FileRequest"), exports);
+__exportStar(require("./IntegrationEventRequest"), exports);
+__exportStar(require("./IntegrationRequest"), exports);

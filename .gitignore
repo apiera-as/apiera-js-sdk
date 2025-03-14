@@ -1,2 +1,20 @@
+# Node dependencies
 /node_modules/
+
+# IDE files
 /.idea/
+
+# TypeScript compiled output
+*.js
+*.js.map
+*.d.ts
+
+# Exclude these specific JS files (keep them in git)
+!jest.config.js
+!webpack.config.js
+!.eslintrc.js
+
+# Exclude distribution/build folders
+dist/
+build/
+lib/
